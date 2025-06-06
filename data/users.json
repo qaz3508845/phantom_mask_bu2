@@ -1,0 +1,849 @@
+[
+    {
+        "name": "Yvonne Guerrero",
+        "cashBalance": 116.09,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Keystone Pharmacy",
+                "maskName": "True Barrier (green) (3 per pack)",
+                "transactionAmount": 11.86,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2024-12-24 15:18:51"
+            },
+            {
+                "pharmacyName": "Medlife",
+                "maskName": "True Barrier (green) (10 per pack)",
+                "transactionAmount": 36.73,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-17 05:41:10"
+            },
+            {
+                "pharmacyName": "RX Universal",
+                "maskName": "True Barrier (blue) (3 per pack)",
+                "transactionAmount": 6.66,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-20 12:23:09"
+            },
+            {
+                "pharmacyName": "Keystone Pharmacy",
+                "maskName": "Second Smile (blue) (6 per pack)",
+                "transactionAmount": 15.94,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-20 13:20:43"
+            },
+            {
+                "pharmacyName": "Welltrack",
+                "maskName": "True Barrier (green) (10 per pack)",
+                "transactionAmount": 20.58,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-26 20:37:13"
+            },
+            {
+                "pharmacyName": "Prescription Hope",
+                "maskName": "Cotton Kiss (green) (10 per pack)",
+                "transactionAmount": 46.07,
+                "transactionQuantity": 2,
+                "transactionDatetime": "2025-01-30 18:58:57"
+            }
+        ]
+    },
+    {
+        "name": "Ada Larson",
+        "cashBalance": 836.18,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Cool Pharmacy Names",
+                "maskName": "Cotton Kiss (black) (10 per pack)",
+                "transactionAmount": 40.66,
+                "transactionQuantity": 3,
+                "transactionDatetime": "2024-12-27 16:24:34"
+            },
+            {
+                "pharmacyName": "HealthMart",
+                "maskName": "MaskT (green) (10 per pack)",
+                "transactionAmount": 41.84,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-21 00:12:41"
+            }
+        ]
+    },
+    {
+        "name": "Geneva Floyd",
+        "cashBalance": 619.59,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Acculife Drug Stores",
+                "maskName": "True Barrier (green) (10 per pack)",
+                "transactionAmount": 23.15,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2024-12-21 04:14:32"
+            },
+            {
+                "pharmacyName": "PharmaMed",
+                "maskName": "MaskT (green) (10 per pack)",
+                "transactionAmount": 17.03,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2024-12-24 03:08:41"
+            },
+            {
+                "pharmacyName": "Welltrack",
+                "maskName": "Masquerade (blue) (6 per pack)",
+                "transactionAmount": 21.87,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-10 23:39:18"
+            },
+            {
+                "pharmacyName": "Keystone Pharmacy",
+                "maskName": "True Barrier (green) (3 per pack)",
+                "transactionAmount": 12.06,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-12 09:26:36"
+            },
+            {
+                "pharmacyName": "First Pharmacy",
+                "maskName": "Cotton Kiss (blue) (6 per pack)",
+                "transactionAmount": 15.11,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-20 11:44:32"
+            },
+            {
+                "pharmacyName": "Acculife Drug Stores",
+                "maskName": "True Barrier (green) (10 per pack)",
+                "transactionAmount": 23.64,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-21 02:06:35"
+            },
+            {
+                "pharmacyName": "Health Warehouse",
+                "maskName": "MaskT (black) (10 per pack)",
+                "transactionAmount": 15.71,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-24 12:42:37"
+            },
+            {
+                "pharmacyName": "Acculife Drug Stores",
+                "maskName": "True Barrier (green) (10 per pack)",
+                "transactionAmount": 23.64,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-27 12:21:35"
+            },
+            {
+                "pharmacyName": "Carepoint",
+                "maskName": "Masquerade (blue) (6 per pack)",
+                "transactionAmount": 7.05,
+                "transactionQuantity": 4,
+                "transactionDatetime": "2025-01-30 08:25:13"
+            }
+        ]
+    },
+    {
+        "name": "Lester Arnold",
+        "cashBalance": 234.84,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "DFW Wellness",
+                "maskName": "Second Smile (black) (3 per pack)",
+                "transactionAmount": 4.99,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2024-12-12 10:58:40"
+            },
+            {
+                "pharmacyName": "First Care Rx",
+                "maskName": "MaskT (black) (10 per pack)",
+                "transactionAmount": 44.4,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-06 07:46:12"
+            },
+            {
+                "pharmacyName": "Blink Health",
+                "maskName": "Second Smile (black) (6 per pack)",
+                "transactionAmount": 26.8,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-23 23:28:08"
+            },
+            {
+                "pharmacyName": "Health Warehouse",
+                "maskName": "MaskT (black) (10 per pack)",
+                "transactionAmount": 15.71,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-25 05:32:57"
+            },
+            {
+                "pharmacyName": "RX Universal",
+                "maskName": "MaskT (green) (10 per pack)",
+                "transactionAmount": 43.6,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-26 13:03:25"
+            },
+            {
+                "pharmacyName": "Foundation Care",
+                "maskName": "Masquerade (green) (10 per pack)",
+                "transactionAmount": 29.66,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-28 00:21:27"
+            }
+        ]
+    },
+    {
+        "name": "Violet Bush",
+        "cashBalance": 550.77,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Centrico",
+                "maskName": "MaskT (green) (6 per pack)",
+                "transactionAmount": 6.86,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2024-12-28 09:05:45"
+            },
+            {
+                "pharmacyName": "First Pharmacy",
+                "maskName": "Second Smile (green) (3 per pack)",
+                "transactionAmount": 11.96,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-17 04:10:14"
+            },
+            {
+                "pharmacyName": "Carepoint",
+                "maskName": "Masquerade (blue) (6 per pack)",
+                "transactionAmount": 7.05,
+                "transactionQuantity": 2,
+                "transactionDatetime": "2025-01-17 04:24:31"
+            },
+            {
+                "pharmacyName": "Welltrack",
+                "maskName": "Cotton Kiss (black) (10 per pack)",
+                "transactionAmount": 16.31,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-23 10:45:05"
+            }
+        ]
+    },
+    {
+        "name": "Bertha Guzman",
+        "cashBalance": 172.67,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Welltrack",
+                "maskName": "Cotton Kiss (black) (10 per pack)",
+                "transactionAmount": 16.31,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-11 12:31:15"
+            },
+            {
+                "pharmacyName": "Cool Pharmacy Names",
+                "maskName": "Masquerade (black) (3 per pack)",
+                "transactionAmount": 11.02,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-22 15:37:38"
+            }
+        ]
+    },
+    {
+        "name": "Sherri Lynch",
+        "cashBalance": 290.44,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "First Care Rx",
+                "maskName": "MaskT (green) (10 per pack)",
+                "transactionAmount": 37.87,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-17 10:46:34"
+            },
+            {
+                "pharmacyName": "RX Universal",
+                "maskName": "MaskT (black) (6 per pack)",
+                "transactionAmount": 28.09,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-23 10:31:00"
+            },
+            {
+                "pharmacyName": "RX Universal",
+                "maskName": "MaskT (green) (10 per pack)",
+                "transactionAmount": 43.6,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-26 08:36:32"
+            }
+        ]
+    },
+    {
+        "name": "Timothy Schultz",
+        "cashBalance": 729.44,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Keystone Pharmacy",
+                "maskName": "Second Smile (blue) (6 per pack)",
+                "transactionAmount": 15.15,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-12-26 07:29:47"
+            },
+            {
+                "pharmacyName": "Health Element",
+                "maskName": "Masquerade (green) (6 per pack)",
+                "transactionAmount": 25.44,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-09 12:22:09"
+            },
+            {
+                "pharmacyName": "Below Drug",
+                "maskName": "Masquerade (green) (6 per pack)",
+                "transactionAmount": 27.59,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-09 15:45:52"
+            },
+            {
+                "pharmacyName": "PharmaMed",
+                "maskName": "MaskT (green) (10 per pack)",
+                "transactionAmount": 17.81,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-11 02:32:53"
+            },
+            {
+                "pharmacyName": "Foundation Care",
+                "maskName": "Masquerade (green) (10 per pack)",
+                "transactionAmount": 29.66,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-11 17:49:49"
+            },
+            {
+                "pharmacyName": "Health Element",
+                "maskName": "Masquerade (green) (6 per pack)",
+                "transactionAmount": 25.44,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-12 10:33:56"
+            },
+            {
+                "pharmacyName": "Health Warehouse",
+                "maskName": "MaskT (black) (10 per pack)",
+                "transactionAmount": 15.71,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-16 17:29:30"
+            },
+            {
+                "pharmacyName": "Health Mart",
+                "maskName": "Cotton Kiss (blue) (3 per pack)",
+                "transactionAmount": 7.1,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-22 12:19:53"
+            },
+            {
+                "pharmacyName": "Medlife",
+                "maskName": "True Barrier (blue) (3 per pack)",
+                "transactionAmount": 6.66,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-29 21:44:08"
+            }
+        ]
+    },
+    {
+        "name": "Marilyn Cruz",
+        "cashBalance": 1091.41,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Health Mart",
+                "maskName": "Cotton Kiss (blue) (3 per pack)",
+                "transactionAmount": 7.1,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-01 07:13:01"
+            },
+            {
+                "pharmacyName": "Centrico",
+                "maskName": "Cotton Kiss (black) (3 per pack)",
+                "transactionAmount": 7.94,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-04 11:30:38"
+            },
+            {
+                "pharmacyName": "Health Element",
+                "maskName": "MaskT (green) (10 per pack)",
+                "transactionAmount": 24.55,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-06 16:10:10"
+            },
+            {
+                "pharmacyName": "Health Element",
+                "maskName": "Masquerade (green) (6 per pack)",
+                "transactionAmount": 25.44,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-09 04:47:48"
+            },
+            {
+                "pharmacyName": "Health Mart",
+                "maskName": "Cotton Kiss (blue) (3 per pack)",
+                "transactionAmount": 7.1,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-22 05:58:40"
+            },
+            {
+                "pharmacyName": "Below Drug",
+                "maskName": "True Barrier (blue) (3 per pack)",
+                "transactionAmount": 5.08,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-23 02:58:34"
+            },
+            {
+                "pharmacyName": "Blink Health",
+                "maskName": "Cotton Kiss (black) (6 per pack)",
+                "transactionAmount": 12.28,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-24 15:23:19"
+            },
+            {
+                "pharmacyName": "Carepoint",
+                "maskName": "Masquerade (blue) (6 per pack)",
+                "transactionAmount": 7.05,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-24 21:48:58"
+            },
+            {
+                "pharmacyName": "Below Drug",
+                "maskName": "Masquerade (black) (6 per pack)",
+                "transactionAmount": 12.05,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-26 04:13:17"
+            }
+        ]
+    },
+    {
+        "name": "Eric Underwood",
+        "cashBalance": 407.61,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Acculife Drug Stores",
+                "maskName": "Cotton Kiss (blue) (10 per pack)",
+                "transactionAmount": 12.59,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-10 05:16:52"
+            },
+            {
+                "pharmacyName": "Below Drug",
+                "maskName": "MaskT (black) (6 per pack)",
+                "transactionAmount": 22.68,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-13 20:02:54"
+            },
+            {
+                "pharmacyName": "Health Mart",
+                "maskName": "Cotton Kiss (blue) (3 per pack)",
+                "transactionAmount": 7.1,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-19 22:05:38"
+            },
+            {
+                "pharmacyName": "Foundation Care",
+                "maskName": "Masquerade (green) (10 per pack)",
+                "transactionAmount": 29.66,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-20 17:27:14"
+            },
+            {
+                "pharmacyName": "RX Universal",
+                "maskName": "True Barrier (blue) (3 per pack)",
+                "transactionAmount": 6.66,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-24 21:45:43"
+            },
+            {
+                "pharmacyName": "DFW Wellness",
+                "maskName": "True Barrier (green) (3 per pack)",
+                "transactionAmount": 13.7,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-29 04:17:31"
+            }
+        ]
+    },
+    {
+        "name": "Ismael Cole",
+        "cashBalance": 882.26,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Foundation Care",
+                "maskName": "Masquerade (green) (10 per pack)",
+                "transactionAmount": 29.66,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-01 04:38:33"
+            },
+            {
+                "pharmacyName": "Centrico",
+                "maskName": "True Barrier (green) (3 per pack)",
+                "transactionAmount": 6.5,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-03 17:28:43"
+            },
+            {
+                "pharmacyName": "Health Warehouse",
+                "maskName": "MaskT (black) (10 per pack)",
+                "transactionAmount": 15.71,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-11 20:17:16"
+            },
+            {
+                "pharmacyName": "Welltrack",
+                "maskName": "Masquerade (blue) (6 per pack)",
+                "transactionAmount": 21.87,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-15 21:24:47"
+            },
+            {
+                "pharmacyName": "HealthMart",
+                "maskName": "True Barrier (black) (3 per pack)",
+                "transactionAmount": 3.38,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-21 20:49:14"
+            },
+            {
+                "pharmacyName": "Health Warehouse",
+                "maskName": "MaskT (black) (10 per pack)",
+                "transactionAmount": 15.71,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-23 01:18:11"
+            },
+            {
+                "pharmacyName": "PharmaMed",
+                "maskName": "MaskT (green) (10 per pack)",
+                "transactionAmount": 17.81,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-25 20:02:19"
+            },
+            {
+                "pharmacyName": "Health Mart",
+                "maskName": "Cotton Kiss (blue) (3 per pack)",
+                "transactionAmount": 7.1,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-25 21:44:26"
+            }
+        ]
+    },
+    {
+        "name": "Robyn Wilson",
+        "cashBalance": 506.04,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Cool Pharmacy Names",
+                "maskName": "Second Smile (blue) (3 per pack)",
+                "transactionAmount": 5.4,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-05 16:45:28"
+            },
+            {
+                "pharmacyName": "Cool Pharmacy Names",
+                "maskName": "Masquerade (black) (6 per pack)",
+                "transactionAmount": 17.42,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-05 19:22:27"
+            },
+            {
+                "pharmacyName": "First Pharmacy",
+                "maskName": "Cotton Kiss (blue) (6 per pack)",
+                "transactionAmount": 15.11,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-10 02:43:49"
+            },
+            {
+                "pharmacyName": "DFW Wellness",
+                "maskName": "Masquerade (green) (3 per pack)",
+                "transactionAmount": 9.4,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-15 08:46:36"
+            },
+            {
+                "pharmacyName": "PharmaMed",
+                "maskName": "MaskT (green) (10 per pack)",
+                "transactionAmount": 17.81,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-20 09:24:35"
+            },
+            {
+                "pharmacyName": "Health Element",
+                "maskName": "Masquerade (green) (6 per pack)",
+                "transactionAmount": 25.44,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-22 09:37:48"
+            },
+            {
+                "pharmacyName": "HealthMart",
+                "maskName": "True Barrier (black) (3 per pack)",
+                "transactionAmount": 3.38,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-23 12:41:16"
+            }
+        ]
+    },
+    {
+        "name": "Winifred Steele",
+        "cashBalance": 46.06,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Keystone Pharmacy",
+                "maskName": "Cotton Kiss (black) (3 per pack)",
+                "transactionAmount": 3.8,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-15 16:00:57"
+            },
+            {
+                "pharmacyName": "First Pharmacy",
+                "maskName": "MaskT (green) (6 per pack)",
+                "transactionAmount": 21.52,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-16 18:24:58"
+            },
+            {
+                "pharmacyName": "First Pharmacy",
+                "maskName": "MaskT (green) (6 per pack)",
+                "transactionAmount": 21.52,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-25 02:46:41"
+            },
+            {
+                "pharmacyName": "Health Mart",
+                "maskName": "Cotton Kiss (blue) (3 per pack)",
+                "transactionAmount": 7.1,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-26 04:11:25"
+            }
+        ]
+    },
+    {
+        "name": "Willie Moran",
+        "cashBalance": 147.34,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Below Drug",
+                "maskName": "Masquerade (black) (3 per pack)",
+                "transactionAmount": 6.59,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-03 20:50:17"
+            },
+            {
+                "pharmacyName": "Prescription Hope",
+                "maskName": "Cotton Kiss (green) (10 per pack)",
+                "transactionAmount": 46.07,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-13 20:44:43"
+            }
+        ]
+    },
+    {
+        "name": "Marlon Watson",
+        "cashBalance": 598.55,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "HealthMart",
+                "maskName": "MaskT (green) (10 per pack)",
+                "transactionAmount": 41.84,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-05 11:27:02"
+            },
+            {
+                "pharmacyName": "PharmaMed",
+                "maskName": "MaskT (green) (10 per pack)",
+                "transactionAmount": 17.81,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-07 09:35:44"
+            },
+            {
+                "pharmacyName": "First Pharmacy",
+                "maskName": "Cotton Kiss (blue) (6 per pack)",
+                "transactionAmount": 15.11,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-13 16:39:17"
+            },
+            {
+                "pharmacyName": "Acculife Drug Stores",
+                "maskName": "Cotton Kiss (blue) (10 per pack)",
+                "transactionAmount": 12.59,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-18 18:21:20"
+            },
+            {
+                "pharmacyName": "Carepoint",
+                "maskName": "Masquerade (blue) (6 per pack)",
+                "transactionAmount": 7.05,
+                "transactionQuantity": 2,
+                "transactionDatetime": "2025-01-28 14:03:58"
+            }
+        ]
+    },
+    {
+        "name": "Holly Thompson",
+        "cashBalance": 518.12,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Health Mart",
+                "maskName": "Cotton Kiss (blue) (3 per pack)",
+                "transactionAmount": 7.1,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-22 10:56:22"
+            },
+            {
+                "pharmacyName": "Medlife",
+                "maskName": "True Barrier (green) (6 per pack)",
+                "transactionAmount": 15.6,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-22 18:21:29"
+            },
+            {
+                "pharmacyName": "Prescription Hope",
+                "maskName": "Cotton Kiss (green) (10 per pack)",
+                "transactionAmount": 46.07,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-23 14:46:48"
+            },
+            {
+                "pharmacyName": "Blink Health",
+                "maskName": "True Barrier (blue) (3 per pack)",
+                "transactionAmount": 13.11,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-25 23:02:19"
+            }
+        ]
+    },
+    {
+        "name": "Wilbert Love",
+        "cashBalance": 865.07,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Foundation Care",
+                "maskName": "Masquerade (green) (10 per pack)",
+                "transactionAmount": 29.66,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-02 02:38:09"
+            },
+            {
+                "pharmacyName": "First Care Rx",
+                "maskName": "Second Smile (black) (3 per pack)",
+                "transactionAmount": 14.96,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-03 07:30:30"
+            },
+            {
+                "pharmacyName": "Carepoint",
+                "maskName": "Masquerade (blue) (6 per pack)",
+                "transactionAmount": 7.05,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-07 05:07:21"
+            },
+            {
+                "pharmacyName": "RX Universal",
+                "maskName": "True Barrier (blue) (3 per pack)",
+                "transactionAmount": 6.66,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-07 15:18:41"
+            },
+            {
+                "pharmacyName": "Keystone Pharmacy",
+                "maskName": "True Barrier (green) (3 per pack)",
+                "transactionAmount": 12.06,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-13 00:19:32"
+            },
+            {
+                "pharmacyName": "First Pharmacy",
+                "maskName": "Cotton Kiss (green) (10 per pack)",
+                "transactionAmount": 16.02,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-13 01:18:23"
+            },
+            {
+                "pharmacyName": "Medlife",
+                "maskName": "True Barrier (green) (10 per pack)",
+                "transactionAmount": 36.73,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-17 19:50:27"
+            },
+            {
+                "pharmacyName": "Prescription Hope",
+                "maskName": "Cotton Kiss (black) (3 per pack)",
+                "transactionAmount": 5.13,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-18 02:47:27"
+            },
+            {
+                "pharmacyName": "RX Universal",
+                "maskName": "True Barrier (blue) (3 per pack)",
+                "transactionAmount": 6.66,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-28 23:17:21"
+            }
+        ]
+    },
+    {
+        "name": "Felipe Gibson",
+        "cashBalance": 211.02,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "Foundation Care",
+                "maskName": "Masquerade (green) (10 per pack)",
+                "transactionAmount": 29.66,
+                "transactionQuantity": 3,
+                "transactionDatetime": "2025-01-26 16:12:13"
+            }
+        ]
+    },
+    {
+        "name": "Pamela French",
+        "cashBalance": 308.64,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "HealthMart",
+                "maskName": "Cotton Kiss (green) (3 per pack)",
+                "transactionAmount": 6.02,
+                "transactionQuantity": 8,
+                "transactionDatetime": "2024-12-13 06:45:59"
+            },
+            {
+                "pharmacyName": "Cool Pharmacy Names",
+                "maskName": "Second Smile (blue) (3 per pack)",
+                "transactionAmount": 5.4,
+                "transactionQuantity": 8,
+                "transactionDatetime": "2025-01-24 10:52:54"
+            }
+        ]
+    },
+    {
+        "name": "Bonnie Malone",
+        "cashBalance": 319.01,
+        "purchaseHistories":
+        [
+            {
+                "pharmacyName": "HealthMart",
+                "maskName": "Cotton Kiss (green) (3 per pack)",
+                "transactionAmount": 6.02,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2024-12-13 06:45:59"
+            },
+            {
+                "pharmacyName": "Below Drug",
+                "maskName": "Masquerade (green) (10 per pack)",
+                "transactionAmount": 33.11,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-24 12:50:42"
+            },
+            {
+                "pharmacyName": "DFW Wellness",
+                "maskName": "MaskT (green) (10 per pack)",
+                "transactionAmount": 41.86,
+                "transactionQuantity": 1,
+                "transactionDatetime": "2025-01-26 10:49:29"
+            }
+        ]
+    }
+]
