@@ -63,9 +63,10 @@ class MaskResponse(MaskBase, BaseResponse):
     pharmacy_id: int = Field(..., description="藥局ID")
     created_at: datetime = Field(..., description="建立時間")
     updated_at: datetime = Field(..., description="更新時間")
-    
-    # 可選的關聯資料
-    pharmacy: Optional[PharmacyResponse] = None
+
+class PharmacyWithMaskCountResponse(PharmacyResponse):
+    """藥局回應模型（含口罩庫存數量）"""
+    mask_count: int = Field(..., description="符合條件的口罩總庫存數量")
 
 # 用戶相關模型
 class UserBase(BaseModel):

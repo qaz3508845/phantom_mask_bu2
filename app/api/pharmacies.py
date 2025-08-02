@@ -6,12 +6,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 import re
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from typing import List, Optional, Union
 from datetime import time
 from app.database.connection import get_db
-from app.schemas.schemas import PharmacyResponse
-from app.models import Pharmacy
+from app.schemas.schemas import PharmacyResponse, PharmacyWithMaskCountResponse
+from app.models import Pharmacy, Mask
 
 router = APIRouter()
 
@@ -177,3 +178,82 @@ async def list_pharmacies(
         pharmacies = filtered_pharmacies
     
     return pharmacies
+
+@router.get("/filter/masks", response_model=List[PharmacyWithMaskCountResponse])
+async def filter_pharmacies_by_masks(
+    min_price: Optional[float] = Query(None, ge=0, description="價格下限（選填）"),
+    max_price: Optional[float] = Query(None, ge=0, description="價格上限（選填）"),
+    min_count: Optional[int] = Query(None, ge=0, description="口罩數量下限（選填）"),
+    max_count: Optional[int] = Query(None, ge=0, description="口罩數量上限（選填）"),
+    skip: int = Query(0, ge=0, description="跳過筆數"),
+    limit: int = Query(100, ge=1, le=1000, description="取得筆數"),
+    db: Session = Depends(get_db)
+):
+    """
+    根據口罩數量和價格範圍篩選藥局
+    
+    需求3: List all pharmacies that offer a number of mask products within a given price range, 
+           where the count is above, below, or between given thresholds
+    
+    使用範例：
+    - ?min_price=10&max_price=50&min_count=100    # 在10-50元範圍內有100個以上口罩庫存的藥局
+    - ?max_price=100&max_count=500                # 在100元以下有500個以下口罩庫存的藥局  
+    - ?min_price=20&max_price=80&min_count=50&max_count=300  # 在20-80元範圍內有50-300個口罩庫存的藥局
+    - ?min_count=100                              # 有100個以上口罩庫存的藥局（不限價格）
+    - ?min_price=10&max_price=50                  # 在10-50元範圍內有口罩庫存的藥局（不限數量）
+    """
+    
+    # 參數驗證
+    if min_price is not None and max_price is not None and min_price > max_price:
+        raise HTTPException(status_code=422, detail="價格下限不能大於價格上限")
+    
+    if min_count is not None and max_count is not None and min_count > max_count:
+        raise HTTPException(status_code=422, detail="數量下限不能大於數量上限")
+    
+    # 建立口罩子查詢：計算每家藥局符合價格條件的口罩總庫存數量
+    mask_query = db.query(
+        Mask.pharmacy_id.label("pharmacy_id"),
+        func.sum(Mask.stock_quantity).label("mask_count")
+    )
+    
+    # 動態加入價格過濾條件
+    if min_price is not None:
+        mask_query = mask_query.filter(Mask.price >= min_price)
+    if max_price is not None:
+        mask_query = mask_query.filter(Mask.price <= max_price)
+    
+    mask_subquery = mask_query.group_by(Mask.pharmacy_id).subquery()
+
+    # 主查詢：聯接藥局和口罩數量
+    query = (
+        db.query(
+            Pharmacy,
+            mask_subquery.c.mask_count
+        )
+        .join(mask_subquery, Pharmacy.id == mask_subquery.c.pharmacy_id)
+    )
+
+    # 根據口罩數量條件過濾
+    if min_count is not None:
+        query = query.filter(mask_subquery.c.mask_count >= min_count)
+    if max_count is not None:
+        query = query.filter(mask_subquery.c.mask_count <= max_count)
+
+    # 執行查詢並分頁
+    results = query.offset(skip).limit(limit).all()
+    
+    # 組建回應
+    filtered_pharmacies = []
+    for pharmacy, mask_count in results:
+        pharmacy_dict = {
+            "id": pharmacy.id,
+            "name": pharmacy.name,
+            "cash_balance": pharmacy.cash_balance,
+            "opening_hours": pharmacy.opening_hours,
+            "created_at": pharmacy.created_at,
+            "updated_at": pharmacy.updated_at,
+            "mask_count": int(mask_count) if mask_count else 0  # 確保是整數，處理 NULL 值
+        }
+        filtered_pharmacies.append(pharmacy_dict)
+    
+    return filtered_pharmacies
