@@ -4,7 +4,7 @@ Pydantic 模型定義
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List, Dict, Any, Union
 from pydantic import BaseModel, Field, field_validator
 
@@ -116,3 +116,26 @@ class TransactionResponse(TransactionBase, BaseResponse):
     user: Optional[UserResponse] = None
     pharmacy: Optional[PharmacyResponse] = None
     mask: Optional[MaskResponse] = None
+
+# 用戶統計相關模型
+class UserRankingResponse(BaseResponse):
+    """用戶排行榜回應模型"""
+    rank: int = Field(..., description="排名")
+    user_id: int = Field(..., description="用戶ID")
+    user_name: str = Field(..., description="用戶名稱")
+    cash_balance: float = Field(..., description="現金餘額")
+    total_spending: float = Field(..., description="總消費金額")
+    total_quantity: int = Field(..., description="總購買數量")
+    total_transactions: int = Field(..., description="總交易次數")
+    ranking_type: str = Field(..., description="排行榜類型")
+    start_date: Optional[date] = Field(None, description="統計開始日期")
+    end_date: Optional[date] = Field(None, description="統計結束日期")
+    
+    @field_validator('cash_balance', 'total_spending', mode='before')
+    @classmethod
+    def round_money_fields(cls, v):
+        """將金額欄位四捨五入到小數點後2位"""
+        if v is not None:
+            return round(float(v), 2)
+        return v
+
