@@ -2,6 +2,22 @@
 
 本專案使用 FastAPI 和 PostgreSQL 實作完整的藥局與口罩管理系統。
 
+## 系統架構
+
+### 技術棧
+- **後端框架**: FastAPI 0.104.1
+- **資料庫**: PostgreSQL 15
+- **ORM**: SQLAlchemy 2.x
+- **部署**: Docker + Docker Compose
+- **測試**: pytest + pytest-cov
+
+### 安全性設計
+- **資料驗證**: Pydantic 模型驗證
+- **SQL 注入防護**: SQLAlchemy ORM 參數化查詢
+- **併發控制**: PostgreSQL 悲觀鎖
+- **錯誤處理**: 統一 HTTP 狀態碼
+- **CORS 設定**: 開發環境開放
+
 ## 需求完成狀態
 
 所有 8 個功能需求已完成實作與測試
@@ -25,18 +41,66 @@
 
 ## 快速開始
 
-### 使用 Docker 部署（推薦）
+### 新環境部署指南
 
+如果你是第一次部署這個系統，請按照以下步驟操作：
+
+#### 前置需求
+- Docker Desktop 或 Docker + Docker Compose
+- Git（用於克隆專案）
+
+#### 步驟 1: 獲取專案 
 ```bash
-# 1. 啟動服務
+# 克隆專案（如果還沒有的話）
+git clone <repository-url>
+cd phantom_mask_bu2
+```
+
+#### 步驟 2: 環境配置
+```bash
+# 系統已有預設環境變數，可直接啟動
+# 如需自訂設定，請參考不使用 Docker 部署章節
+```
+
+#### 步驟 3: 啟動完整系統
+```bash
+# 一鍵啟動：PostgreSQL + API 服務
 docker-compose up -d
 
-# 2. 載入測試資料
-docker exec phantom_mask_api python run_etl.py --auto
+# 檢查服務狀態
+docker-compose ps
 
-# 3. 存取 API 文件
+# 查看啟動日誌
+docker-compose logs -f
+```
+
+#### 步驟 4: 載入測試資料
+```bash
+# 載入完整測試資料集
+docker exec phantom_mask_api python run_etl.py --auto
+```
+
+#### 步驟 5: 驗證部署
+```bash
+# 健康檢查
+curl http://localhost:8000/health
+
+# 查看 API 文件
 # 瀏覽器開啟: http://localhost:8000/docs
 ```
+
+#### 步驟 6: 執行測試套件
+```bash
+# 進入容器執行測試
+docker exec phantom_mask_api pytest
+
+# 或者執行完整測試與覆蓋率報告
+docker exec phantom_mask_api pytest --cov=app --cov-report=html --cov-report=term-missing
+
+# 查看測試覆蓋率（HTML 報告會在 htmlcov/ 目錄中）
+ls htmlcov/
+```
+
 
 ### 不使用 Docker 部署
 
@@ -77,19 +141,6 @@ python run_etl.py
 - **API 文件 (ReDoc)**: `http://localhost:8000/redoc`
 - **OpenAPI JSON**: `http://localhost:8000/openapi.json`
 
-## 資料匯入指令
-
-部署完成後，執行以下指令載入測試資料：
-
-```bash
-# Docker 環境
-docker exec phantom_mask_api python run_etl.py --auto
-
-# 本地環境
-python run_etl.py
-```
-
-> **注意**: ETL 腳本會自動建立資料庫表格並載入 JSON 測試資料，包含藥局、用戶、口罩和交易記錄。
 
 ## API 文件
 
@@ -124,17 +175,27 @@ API 使用 OpenAPI 3.0 規範，可透過以下互動式文件介面存取：
 實作測試套件，涵蓋 8 個功能需求的主要成功和失敗場景：
 
 ### 測試覆蓋範圍
-- ✅ **需求1**: 藥局列表與時間過濾
-- ✅ **需求2**: 藥局口罩列表與排序
-- ✅ **需求3**: 價格範圍與數量門檻查詢
-- ✅ **需求4**: 用戶消費排行榜
-- ✅ **需求5**: 多藥局交易處理
-- ✅ **需求6**: 口罩庫存更新
-- ✅ **需求7**: 批量口罩管理
-- ✅ **需求8**: 搜尋功能與相關性排序
+- **需求1**: 藥局列表與時間過濾
+- **需求2**: 藥局口罩列表與排序
+- **需求3**: 價格範圍與數量門檻查詢
+- **需求4**: 用戶消費排行榜
+- **需求5**: 多藥局交易處理
+- **需求6**: 口罩庫存更新
+- **需求7**: 批量口罩管理
+- **需求8**: 搜尋功能與相關性排序
 
 ### 測試執行指令
 
+#### Docker 環境
+```bash
+# 執行所有測試
+docker exec phantom_mask_api pytest
+
+# 執行測試並產生覆蓋率報告
+docker exec phantom_mask_api pytest --cov=app --cov-report=html --cov-report=term-missing
+```
+
+#### 本地環境
 ```bash
 # 執行所有測試
 pytest
@@ -143,7 +204,8 @@ pytest
 pytest --cov=app --cov-report=html --cov-report=term-missing
 
 # 查看 HTML 覆蓋率報告
-open htmlcov/index.html
+open htmlcov/index.html  # macOS
+start htmlcov/index.html # Windows
 ```
 
 ### 測試結果
@@ -171,15 +233,16 @@ open htmlcov/index.html
 - **搜尋功能測試**: 14 個 - 搜尋與排序邏輯
 - **併發控制測試**: 5 個 - 多線程環境下的業務邏輯驗證
 
-測試涵蓋成功場景、錯誤處理、邊界條件、業務邏輯驗證和多線程安全。註：由於使用 SQLite 作為測試資料庫，併發控制測試主要驗證業務邏輯正確性，真正的併發安全需在 PostgreSQL 生產環境中驗證。
+測試涵蓋成功場景、錯誤處理、邊界條件。註：併發控制測試使用 SQLite，實際併發安全需在 PostgreSQL 環境驗證。
 
 ### 完整測試報告
 
 詳細的測試實施與結果分析請參考：[TEST_REPORT.md](TEST_REPORT.md)
 
+
 ## 品質保證與達成標準
 
-### README.md 要求達成度
+### 專案達成度
 
 | 評審標準 | 狀態 | 說明 |
 |----------|------|------|
@@ -196,12 +259,63 @@ open htmlcov/index.html
 
 ### 資料庫結構
 
-專案包含以下主要資料表：
-- **pharmacies**: 藥局基本資訊和營業時間
-- **masks**: 口罩產品資訊和庫存
-- **users**: 用戶基本資訊和餘額
-- **transactions**: 交易記錄和明細
+#### 主要資料表設計
+
+**pharmacies (藥局資料表)**
+- `id` (Serial): 主鍵
+- `name` (VARCHAR 255): 藥局名稱 (索引)
+- `cash_balance` (DECIMAL 10,2): 現金餘額
+- `opening_hours` (TEXT): 營業時間 (JSON 格式)
+- `created_at`, `updated_at` (TIMESTAMP): 時間戳記
+
+**masks (口罩產品資料表)**
+- `id` (Serial): 主鍵  
+- `name` (VARCHAR 255): 產品名稱 (索引)
+- `price` (DECIMAL 10,2): 價格
+- `stock_quantity` (INTEGER): 庫存數量
+- `pharmacy_id` (INTEGER): 外鍵關聯到 pharmacies
+- `created_at`, `updated_at` (TIMESTAMP): 時間戳記
+
+**users (用戶資料表)**
+- `id` (Serial): 主鍵
+- `name` (VARCHAR 255): 用戶名稱 (索引)
+- `cash_balance` (DECIMAL 10,2): 現金餘額
+- `created_at`, `updated_at` (TIMESTAMP): 時間戳記
+
+**transactions (交易記錄資料表)**
+- `id` (Serial): 主鍵
+- `user_id` (INTEGER): 外鍵關聯到 users (索引)
+- `pharmacy_id` (INTEGER): 外鍵關聯到 pharmacies (索引)
+- `mask_id` (INTEGER): 外鍵關聯到 masks (索引)
+- `quantity` (INTEGER): 購買數量
+- `unit_price`, `total_amount` (DECIMAL 10,2): 單價和總額
+- `transaction_datetime` (TIMESTAMP): 交易時間 (索引)
+- `created_at`, `updated_at` (TIMESTAMP): 時間戳記
+
+#### 關聯設計
+- 一對多: Pharmacy → Masks
+- 多對多: Users ↔ Pharmacies (透過 Transactions)
+- 交易記錄保存完整的快照資料，支援歷史查詢
+
+## 資料持久化
+
+### 資料庫檔案位置
+- **本地路徑**: `./db_data/`
+- **包含內容**: 完整的 PostgreSQL 資料檔案
+- **版本控制**: 已加入 `.gitignore`，不會同步到 Git
+
+### 備份與還原
+```bash
+# 備份資料庫
+docker exec phantom_mask_postgres pg_dump -U postgres phantom_mask > backup.sql
+
+# 還原資料庫
+docker exec -i phantom_mask_postgres psql -U postgres phantom_mask < backup.sql
+
+# 備份整個資料庫目錄
+tar -czf db_backup.tar.gz db_data/
+```
 
 ## 專案總結
 
-系統實作 8 個功能需求，使用 FastAPI + PostgreSQL 架構，提供 Docker 部署方式。測試覆蓋率達 87%，包含 72 個測試案例。API 文件使用 OpenAPI 3.0 標準。
+系統實作 8 個功能需求，使用 FastAPI + PostgreSQL 架構。測試覆蓋率 87%，共 77 個測試案例。

@@ -11,14 +11,15 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./db_data:/var/lib/postgresql/data
     networks:
       - phantom_mask_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-phantom_mask}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   api:
     build:
@@ -47,9 +48,10 @@ services:
     networks:
       - phantom_mask_network
     restart: unless-stopped
+    command: >
+      sh -c "python init_db.py && 
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
-volumes:
-  postgres_data:
 
 networks:
   phantom_mask_network:
