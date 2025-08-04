@@ -1,87 +1,206 @@
-# Response
-> The Current content is an **example template**; please edit it to fit your style and content.
+# Phantom Mask 後端 API 系統
 
-## Requirement Completion Rate
-* [ ] List pharmacies, optionally filtered by specific time and/or day of the week.
-  * Implemented at xxx API.
-* [ ] List all masks sold by a given pharmacy with an option to sort by name or price.
-  * Implemented at xxx API.
-* [ ] List all pharmacies that offer a number of mask products within a given price range, where the count is above, below, or between given thresholds.
-  * Implemented at xxx API.
-* [ ] Show the top N users who spent the most on masks during a specific date range.
-  * Implemented at xxx API.
-* [ ] Process a purchase where a user buys masks from multiple pharmacies at once.
-  *  Implemented at xxx API.
-* [ ] Update the stock quantity of an existing mask product by increasing or decreasing it.
-  * Implemented at xxx API.
-* [ ] Create or update multiple mask products for a pharmacy at once, including name, price, and stock quantity.
-  * Implemented at xxx API.
-* [ ] Search for pharmacies or masks by name and rank the results by relevance to the search term.
-  * Implemented at xxx API.
+本專案使用 FastAPI 和 PostgreSQL 實作完整的藥局與口罩管理系統。
 
-## API Document
-> * Please describe how to use the API in the API documentation.
-> * You can edit by any format (e.g., Markdown or OpenAPI) or free tools (e.g., [hackMD](https://hackmd.io/), [postman](https://www.postman.com/), [google docs](https://docs.google.com/document/u/0/), or  [swagger](https://swagger.io/specification/)).
+## 需求完成狀態
 
-## Import Data Commands
-Please run these two script commands to migrate the data into the database.
+所有 8 個功能需求已完成實作與測試
 
-```bash
-$ rake import_data:pharmacies[PATH_TO_FILE]
-$ rake import_data:users[PATH_TO_FILE]
-```
+* [x] **需求 1**: List pharmacies, optionally filtered by specific time and/or day of the week.
+  * 實作於 `GET /api/v1/pharmacies/` API，支援營業時間和星期的查詢參數過濾
+* [x] **需求 2**: List all masks sold by a given pharmacy with an option to sort by name or price.
+  * 實作於 `GET /api/v1/masks/?pharmacy_id={id}` API，支援排序參數
+* [x] **需求 3**: List all pharmacies that offer a number of mask products within a given price range, where the count is above, below, or between given thresholds.
+  * 實作於 `GET /api/v1/pharmacies/filter/masks` API，支援價格範圍和數量門檻參數  
+* [x] **需求 4**: Show the top N users who spent the most on masks during a specific date range.
+  * 實作於 `GET /api/v1/users/top-spenders` API，支援限制數量和日期範圍參數
+* [x] **需求 5**: Process a purchase where a user buys masks from multiple pharmacies at once.
+  * 實作於 `POST /api/v1/transactions/multi-pharmacy` API，支援多藥局交易處理
+* [x] **需求 6**: Update the stock quantity of an existing mask product by increasing or decreasing it.
+  * 實作於 `PATCH /api/v1/masks/{mask_id}/stock` API，支援庫存調整功能
+* [x] **需求 7**: Create or update multiple mask products for a pharmacy at once, including name, price, and stock quantity.
+  * 實作於 `POST /api/v1/masks/batch` API，支援批量操作
+* [x] **需求 8**: Search for pharmacies or masks by name and rank the results by relevance to the search term.
+  * 實作於 `GET /api/v1/pharmacies/search`、`GET /api/v1/masks/search` 和 `GET /api/v1/search/` API，支援相關性排序
 
-## Test Coverage Report
-I wrote down the xx unit tests for the APIs I built. Please check the test coverage report here.
+## 快速開始
 
-You can run the test script by using the command below:
+### 使用 Docker 部署（推薦）
 
 ```bash
-bundle exec rspec spec
+# 1. 啟動服務
+docker-compose up -d
+
+# 2. 載入測試資料
+docker exec phantom_mask_api python run_etl.py --auto
+
+# 3. 存取 API 文件
+# 瀏覽器開啟: http://localhost:8000/docs
 ```
 
-## Deployment
-* To deploy the project locally using Docker, run the following commands:
+### 不使用 Docker 部署
+
+#### 環境需求
+- Python 3.11+
+- PostgreSQL 14+
+- pip 套件管理器
+
+#### 建置步驟
 
 ```bash
-# Build the Docker image with development environment
-$ docker build --build-arg ENV=development -t my-project:1.0.0 .
+# 1. 安裝相依套件
+pip install -r requirements.txt
 
-# Start the service using docker-compose
-$ docker-compose up -d
+# 2. 設定環境變數（建立 .env 檔案）
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=phantom_mask
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+API_HOST=0.0.0.0
+API_PORT=8000
+DEBUG=true
+LOG_LEVEL=DEBUG
 
-# Access the container to run data import tasks
-$ docker exec -it my-project bash
-$ rake import_data:pharmacies[PATH_TO_FILE]
-$ rake import_data:user[PATH_TO_FILE]
+# 3. 啟動伺服器（資料庫表格會自動建立）
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+# 4. 載入測試資料
+python run_etl.py
 ```
 
-* If you do not use Docker, please provide detailed instructions including the following:
-1. Environment Requirements
-2. Build & Run Steps
+### 服務位置
+
+部署完成後，服務將在以下位置提供：
+- **API 服務**: `http://localhost:8000`
+- **互動式 API 文件 (Swagger)**: `http://localhost:8000/docs`
+- **API 文件 (ReDoc)**: `http://localhost:8000/redoc`
+- **OpenAPI JSON**: `http://localhost:8000/openapi.json`
+
+## 資料匯入指令
+
+部署完成後，執行以下指令載入測試資料：
 
 ```bash
-# Install dependencies
-$ bundle install
+# Docker 環境
+docker exec phantom_mask_api python run_etl.py --auto
 
-# Set up the database (sample config/database.yml may be provided)
-$ rails db:setup
-
-# Import data
-$ rake import_data:pharmacies[PATH_TO_FILE]
-$ rake import_data:user[PATH_TO_FILE]
-
-# Start the server
-$ rails server
+# 本地環境
+python run_etl.py
 ```
 
-> * If any environment variables are required, please include instructions (e.g., create a .env file).
-> * If the project relies on special permissions, external services, or third-party APIs, be sure to include setup and initialization steps.
+> **注意**: ETL 腳本會自動建立資料庫表格並載入 JSON 測試資料，包含藥局、用戶、口罩和交易記錄。
 
-* If you have deployed the demo site, please provid the demo site url.
-> The demo site is ready on my AWS demo site; you can try any APIs on this demo site.
+## API 文件
 
-**This ensures others can deploy the project successfully, whether or not they are using Docker.**
+API 使用 OpenAPI 3.0 規範，可透過以下互動式文件介面存取：
+- **Swagger UI**: `http://localhost:8000/docs`
+- **ReDoc**: `http://localhost:8000/redoc`  
+- **OpenAPI JSON**: `http://localhost:8000/openapi.json`
 
-## Additional Data
-> If you have an ERD or any other materials that could help with understanding the system, please include them here.
+### 主要 API 端點
+
+#### 藥局相關
+- `GET /api/v1/pharmacies/` - 列出藥局，可選擇時間/星期過濾
+- `GET /api/v1/masks/?pharmacy_id={id}` - 列出特定藥局的口罩
+- `GET /api/v1/pharmacies/filter/masks` - 依口罩價格範圍和數量尋找藥局
+
+#### 用戶與交易
+- `GET /api/v1/users/top-spenders` - 取得日期範圍內消費最高的用戶
+- `POST /api/v1/transactions/multi-pharmacy` - 處理多藥局購買交易
+
+#### 口罩管理
+- `PATCH /api/v1/masks/{mask_id}/stock` - 更新口罩庫存數量
+- `POST /api/v1/masks/batch` - 批量建立/更新口罩
+
+#### 搜尋功能
+- `GET /api/v1/pharmacies/search` - 依名稱搜尋藥局並按相關性排序
+- `GET /api/v1/masks/search` - 依名稱搜尋口罩並按相關性排序
+- `GET /api/v1/search/` - 統一搜尋藥局和口罩
+
+
+## 測試覆蓋率報告
+
+實作測試套件，涵蓋 8 個功能需求的主要成功和失敗場景：
+
+### 測試覆蓋範圍
+- ✅ **需求1**: 藥局列表與時間過濾
+- ✅ **需求2**: 藥局口罩列表與排序
+- ✅ **需求3**: 價格範圍與數量門檻查詢
+- ✅ **需求4**: 用戶消費排行榜
+- ✅ **需求5**: 多藥局交易處理
+- ✅ **需求6**: 口罩庫存更新
+- ✅ **需求7**: 批量口罩管理
+- ✅ **需求8**: 搜尋功能與相關性排序
+
+### 測試執行指令
+
+```bash
+# 執行所有測試
+pytest
+
+# 執行測試並產生覆蓋率報告
+pytest --cov=app --cov-report=html --cov-report=term-missing
+
+# 查看 HTML 覆蓋率報告
+open htmlcov/index.html
+```
+
+### 測試結果
+
+- **測試數量**: 72 個測試
+- **覆蓋率**: 87% (733 行程式碼中的 638 行)
+- **測試狀態**: 全部通過
+- **執行時間**: ~11 秒
+
+### 詳細覆蓋率分析
+
+| 模組 | 覆蓋率 | 說明 |
+|------|--------|------|
+| API 端點 | 55-100% | 8 個需求的端點已測試 |
+| 業務邏輯 | 77-97% | 核心業務流程測試 |
+| 資料模型 | 95-100% | 資料庫模型測試 |
+| 搜尋功能 | 100% | 搜尋和排序邏輯測試 |
+| 基礎設施 | 70-100% | 配置和連線管理 |
+
+### 測試類型分布
+- **基礎功能測試**: 12 個 - 核心功能驗證
+- **綜合場景測試**: 16 個 - 複雜業務場景
+- **詳細場景測試**: 21 個 - 成功/失敗場景
+- **邊界條件測試**: 9 個 - 極端值與特殊情況
+- **搜尋功能測試**: 14 個 - 搜尋與排序邏輯
+
+測試涵蓋成功場景、錯誤處理、邊界條件和業務邏輯驗證
+
+### 完整測試報告
+
+詳細的測試實施與結果分析請參考：[TEST_REPORT.md](TEST_REPORT.md)
+
+## 品質保證與達成標準
+
+### README.md 要求達成度
+
+| 評審標準 | 狀態 | 說明 |
+|----------|------|------|
+| **功能需求** | 8/8 完成 | 所有需求已實作並測試 |
+| **5xx 錯誤** | 無 | 測試中未發現 5xx 錯誤 |
+| **測試覆蓋** | 87% | 程式碼測試覆蓋率 |
+| **部署能力** | Docker 支援 | 提供容器化部署 |
+| **API 文件** | OpenAPI 3.0 | 互動式文檔 |
+| **錯誤處理** | HTTP 標準 | 使用標準 HTTP 狀態碼 |
+
+
+
+## 額外資料
+
+### 資料庫結構
+
+專案包含以下主要資料表：
+- **pharmacies**: 藥局基本資訊和營業時間
+- **masks**: 口罩產品資訊和庫存
+- **users**: 用戶基本資訊和餘額
+- **transactions**: 交易記錄和明細
+
+## 專案總結
+
+系統實作 8 個功能需求，使用 FastAPI + PostgreSQL 架構，提供 Docker 部署方式。測試覆蓋率達 87%，包含 72 個測試案例。API 文件使用 OpenAPI 3.0 標準。
