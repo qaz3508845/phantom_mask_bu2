@@ -18,7 +18,7 @@ from app.core.messages import ErrorMessages
 
 logger = get_logger(__name__)
 
-router = APIRouter(tags=["用戶統計"])
+router = APIRouter()
 
 @router.get("/top-spenders", response_model=List[UserRankingResponse])
 async def get_top_spending_users(
