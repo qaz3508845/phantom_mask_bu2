@@ -7,13 +7,12 @@ import json
 from datetime import datetime, date
 from decimal import Decimal
 from typing import Optional, List, Dict, Any, Union
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 # 基礎回應模型
 class BaseResponse(BaseModel):
     """基礎回應模型"""
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # 藥局相關模型
 class PharmacyBase(BaseModel):

@@ -4,7 +4,7 @@
 """
 
 from sqlalchemy import create_engine, text
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 from app.config import settings
@@ -53,3 +53,10 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def supports_for_update(db_session):
+    """檢查資料庫是否支援 SELECT FOR UPDATE"""
+    engine_name = db_session.bind.dialect.name.lower()
+    # SQLite 不支援 FOR UPDATE
+    return engine_name != 'sqlite'

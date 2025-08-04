@@ -7,10 +7,11 @@ from datetime import datetime
 from decimal import Decimal
 from typing import List, Tuple, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, OperationalError
 from fastapi import HTTPException
 
 from app.models import Transaction, User, Pharmacy, Mask
+from app.database.connection import supports_for_update
 from app.schemas.schemas import (
     TransactionCreate, 
     TransactionResponse,
@@ -24,6 +25,11 @@ class TransactionService:
     
     def __init__(self, db: Session):
         self.db = db
+    
+    def safe_query_with_lock(self, model, pk: int):
+        """安全查詢並鎖定記錄（如果支援的話）"""
+        query = self.db.query(model).filter(model.id == pk)
+        return query.with_for_update().first() if supports_for_update(self.db) else query.first()
     
     def validate_transaction_item(self, user_id: int, pharmacy_id: int, mask_id: int, quantity: int) -> Tuple[User, Pharmacy, Mask, Decimal]:
         """
@@ -73,7 +79,7 @@ class TransactionService:
     def create_single_transaction(self, transaction_data: TransactionCreate) -> TransactionResponse:
         """建立單筆交易"""
         try:
-            # 驗證交易項目
+            # 第一步：初步驗證交易項目
             user, pharmacy, mask, total_amount = self.validate_transaction_item(
                 transaction_data.user_id,
                 transaction_data.pharmacy_id,
@@ -81,21 +87,43 @@ class TransactionService:
                 transaction_data.quantity
             )
             
-            # 建立交易記錄
+            # 第二步：重新查詢並鎖定記錄（悲觀鎖）
+            user_locked = self.safe_query_with_lock(User, transaction_data.user_id)
+            mask_locked = self.safe_query_with_lock(Mask, transaction_data.mask_id)
+            pharmacy_locked = self.safe_query_with_lock(Pharmacy, transaction_data.pharmacy_id)
+            
+            # 第三步：使用鎖定的記錄重新驗證
+            if not user_locked or not mask_locked or not pharmacy_locked:
+                raise HTTPException(status_code=404, detail="記錄不存在")
+            
+            if mask_locked.stock_quantity < transaction_data.quantity:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"口罩 {mask_locked.name} 庫存不足，現有庫存: {mask_locked.stock_quantity}，需求: {transaction_data.quantity}"
+                )
+            
+            final_total = mask_locked.price * transaction_data.quantity
+            if user_locked.cash_balance < final_total:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"用戶餘額不足，現有餘額: {user_locked.cash_balance}，需要: {final_total}"
+                )
+            
+            # 第四步：建立交易記錄並更新數據
             transaction = Transaction(
                 user_id=transaction_data.user_id,
                 pharmacy_id=transaction_data.pharmacy_id,
                 mask_id=transaction_data.mask_id,
                 quantity=transaction_data.quantity,
-                unit_price=mask.price,
-                total_amount=total_amount,
+                unit_price=mask_locked.price,
+                total_amount=final_total,
                 transaction_datetime=datetime.now()
             )
             
-            # 更新庫存和餘額
-            setattr(mask, 'stock_quantity', getattr(mask, 'stock_quantity') - transaction_data.quantity)
-            setattr(user, 'cash_balance', getattr(user, 'cash_balance') - total_amount)
-            setattr(pharmacy, 'cash_balance', getattr(pharmacy, 'cash_balance') + total_amount)
+            # 更新庫存和餘額（使用鎖定的記錄）
+            setattr(mask_locked, 'stock_quantity', mask_locked.stock_quantity - transaction_data.quantity)
+            setattr(user_locked, 'cash_balance', user_locked.cash_balance - final_total)
+            setattr(pharmacy_locked, 'cash_balance', pharmacy_locked.cash_balance + final_total)
             
             # 儲存到資料庫
             self.db.add(transaction)
@@ -104,6 +132,16 @@ class TransactionService:
             
             return TransactionResponse.model_validate(transaction)
         
+        except OperationalError as e:
+            self.db.rollback()
+            # 檢查是否為死鎖錯誤
+            if "deadlock" in str(e).lower():
+                raise HTTPException(
+                    status_code=409, 
+                    detail="交易發生衝突，請稍後重試"
+                )
+            else:
+                raise HTTPException(status_code=500, detail=f"資料庫操作失敗: {str(e)}")
         except SQLAlchemyError as e:
             self.db.rollback()
             raise HTTPException(status_code=500, detail=f"資料庫操作失敗: {str(e)}")
@@ -142,27 +180,51 @@ class TransactionService:
                     detail=f"用戶總餘額不足，現有餘額: {user_obj.cash_balance}，總需要: {total_amount}，整筆訂單已取消"
                 )
             
-            # 第三階段：執行所有交易
+            # 第三階段：重新查詢並鎖定記錄，然後執行所有交易
+            # 重新鎖定用戶記錄以確保餘額一致性
+            user_locked = self.safe_query_with_lock(User, transaction_data.user_id)
+            
+            if not user_locked:
+                raise HTTPException(status_code=404, detail="用戶不存在")
+                
+            if user_locked.cash_balance < total_amount:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"用戶總餘額不足，現有餘額: {user_locked.cash_balance}，總需要: {total_amount}"
+                )
+            
             for item, user, pharmacy, mask, item_total in validated_items:
+                # 重新查詢並鎖定口罩記錄以確保庫存一致性
+                mask_locked = self.safe_query_with_lock(Mask, item.mask_id)
+                
+                if not mask_locked:
+                    raise HTTPException(status_code=404, detail=f"口罩 ID {item.mask_id} 不存在")
+                    
+                if mask_locked.stock_quantity < item.quantity:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"口罩 {mask_locked.name} 庫存不足，現有庫存: {mask_locked.stock_quantity}，需求: {item.quantity}"
+                    )
+                
                 transaction = Transaction(
                     user_id=transaction_data.user_id,
                     pharmacy_id=item.pharmacy_id,
                     mask_id=item.mask_id,
                     quantity=item.quantity,
-                    unit_price=mask.price,
+                    unit_price=mask_locked.price,
                     total_amount=item_total,
                     transaction_datetime=datetime.now()
                 )
                 
-                # 更新庫存和餘額
-                setattr(mask, 'stock_quantity', getattr(mask, 'stock_quantity') - item.quantity)
+                # 更新庫存和餘額（使用鎖定的記錄）
+                setattr(mask_locked, 'stock_quantity', mask_locked.stock_quantity - item.quantity)
                 setattr(pharmacy, 'cash_balance', getattr(pharmacy, 'cash_balance') + item_total)
                 
                 self.db.add(transaction)
                 transactions.append(transaction)
             
-            # 更新用戶餘額（一次性扣除總金額）
-            setattr(user_obj, 'cash_balance', getattr(user_obj, 'cash_balance') - total_amount)
+            # 更新用戶餘額（使用鎖定的記錄）
+            setattr(user_locked, 'cash_balance', user_locked.cash_balance - total_amount)
             
             # 提交所有變更
             self.db.commit()
@@ -184,6 +246,16 @@ class TransactionService:
             # 驗證失敗，重新拋出錯誤
             self.db.rollback()
             raise
+        except OperationalError as e:
+            self.db.rollback()
+            # 檢查是否為死鎖錯誤
+            if "deadlock" in str(e).lower():
+                raise HTTPException(
+                    status_code=409, 
+                    detail="多藥局交易發生衝突，請稍後重試"
+                )
+            else:
+                raise HTTPException(status_code=500, detail=f"資料庫操作失敗: {str(e)}")
         except SQLAlchemyError as e:
             self.db.rollback()
             raise HTTPException(status_code=500, detail=f"資料庫操作失敗: {str(e)}")

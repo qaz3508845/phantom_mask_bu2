@@ -5,11 +5,11 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, OperationalError
 from sqlalchemy import func, case, desc
 from typing import List, Optional, Literal, cast
 from datetime import datetime
-from app.database.connection import get_db
+from app.database.connection import get_db, supports_for_update
 from app.schemas.schemas import (
     MaskResponse, 
     StockUpdateRequest, 
@@ -130,15 +130,18 @@ async def update_stock(
     - quantity_change: 10   # 增加 10 個庫存
     - quantity_change: -5   # 減少 5 個庫存
     """
-    # 查找口罩
-    mask = cast(Mask, db.query(Mask).filter(Mask.id == mask_id).first())
+    # 查找口罩 (使用 SELECT FOR UPDATE 防止併發修改)
+    if supports_for_update(db):
+        mask = cast(Mask, db.query(Mask).filter(Mask.id == mask_id).with_for_update().first())
+    else:
+        mask = cast(Mask, db.query(Mask).filter(Mask.id == mask_id).first())
     if not mask:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"口罩 ID {mask_id} 不存在"
         )
     
-    # 記錄原庫存
+    # 記錄原庫存 (此時已鎖定，資料一致)
     old_quantity = cast(int, mask.stock_quantity)
     new_quantity = old_quantity + stock_update.quantity_change
     
@@ -167,6 +170,19 @@ async def update_stock(
             reason=stock_update.reason
         )
         
+    except OperationalError as e:
+        db.rollback()
+        # 檢查是否為死鎖錯誤
+        if "deadlock" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="庫存更新發生衝突，請稍後重試"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"資料庫操作失敗: {str(e)}"
+            )
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(
@@ -231,11 +247,17 @@ async def batch_manage_masks(
         for item in batch_request.masks:
             try:
                 if item.mask_id:
-                    # 更新現有口罩
-                    mask = db.query(Mask).filter(
-                        Mask.id == item.mask_id,
-                        Mask.pharmacy_id == batch_request.pharmacy_id
-                    ).first()
+                    # 更新現有口罩 (使用 SELECT FOR UPDATE 防止併發修改)
+                    if supports_for_update(db):
+                        mask = db.query(Mask).filter(
+                            Mask.id == item.mask_id,
+                            Mask.pharmacy_id == batch_request.pharmacy_id
+                        ).with_for_update().first()
+                    else:
+                        mask = db.query(Mask).filter(
+                            Mask.id == item.mask_id,
+                            Mask.pharmacy_id == batch_request.pharmacy_id
+                        ).first()
                     
                     if not mask:
                         failed_items.append(f"口罩 ID {item.mask_id} 不存在或不屬於指定藥局")
@@ -282,6 +304,19 @@ async def batch_manage_masks(
             failed_items=failed_items
         )
         
+    except OperationalError as e:
+        db.rollback()
+        # 檢查是否為死鎖錯誤
+        if "deadlock" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="批量操作發生衝突，請稍後重試"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"資料庫操作失敗: {str(e)}"
+            )
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(

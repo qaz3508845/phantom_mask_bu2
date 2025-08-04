@@ -327,7 +327,7 @@ class TestComprehensiveScenarios:
         """測試格式錯誤的JSON請求失敗場景"""
         # 測試交易API
         response = client.post("/api/v1/transactions/multi-pharmacy", 
-                              data="invalid json", 
+                              content="invalid json", 
                               headers={"Content-Type": "application/json"})
         assert response.status_code == 422
 
