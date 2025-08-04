@@ -12,8 +12,9 @@ from decimal import Decimal
 from typing import List, Optional, Union
 from datetime import time
 from app.database.connection import get_db
-from app.schemas.schemas import PharmacyResponse, PharmacyWithMaskCountResponse
+from app.schemas import PharmacyResponse, PharmacyWithMaskCountResponse
 from app.models import Pharmacy, Mask
+from app.core.messages import ErrorMessages, invalid_time_format, invalid_day_format
 
 router = APIRouter()
 
@@ -43,7 +44,7 @@ def _validate_day_format(day_input: str) -> str:
     else:
         raise HTTPException(
             status_code=422, 
-            detail=f"無效的星期格式: {day_input}。請使用英文 (monday-sunday) 或數字 (1-7，1=星期一)"
+            detail=invalid_day_format(day_input)
         )
 
 def _validate_time_format(time_str: str) -> str:
@@ -62,7 +63,7 @@ def _parse_time(time_str: str):
         from datetime import time as dt_time
         return dt_time(hour, minute)
     except (ValueError, AttributeError):
-        raise HTTPException(status_code=400, detail=f"無效的時間格式: {time_str}，請使用 HH:MM 格式")
+        raise HTTPException(status_code=400, detail=invalid_time_format(time_str))
 
 def check_pharmacy_open(opening_hours: dict, day_of_week: str, check_time=None) -> bool:
     """
@@ -117,7 +118,7 @@ async def list_pharmacies(
     - ?day=sunday                      # 星期日有營業的藥局
     - ?day=7                           # 同上 (數字格式: 7=星期日)
     - ?time=09:00                      # 早上9點有營業的藥局（任何一天）
-    - ?search=大樹                     # 搜尋名稱包含「大樹」的藥局
+    - ?search=DFW                      # 搜尋名稱包含「DFW」的藥局
     
     星期格式：英文 (monday-sunday) 或數字 (1-7，1=星期一)
     時間格式：HH:MM (例如: 09:30, 14:00, 23:59)
@@ -193,15 +194,15 @@ async def search_pharmacies(
     需求8: Search for pharmacies or masks by name and rank the results by relevance to the search term
     
     使用範例：
-    - ?q=大樹                      # 搜尋名稱包含「大樹」的藥局
-    - ?q=健康                      # 搜尋名稱包含「健康」的藥局
-    - ?q=中心                      # 搜尋名稱包含「中心」的藥局
+    - ?q=DFW                       # 搜尋名稱包含「DFW」的藥局
+    - ?q=Health                    # 搜尋名稱包含「Health」的藥局
+    - ?q=Care                      # 搜尋名稱包含「Care」的藥局
     """
     # 使用 PostgreSQL 的全文搜尋功能或簡單的 ILIKE 模糊匹配
     # 按相關性排序：完全匹配 > 開頭匹配 > 包含匹配
     search_term = q.strip()
     if not search_term:
-        raise HTTPException(status_code=422, detail="搜尋關鍵字不能為空")
+        raise HTTPException(status_code=422, detail=ErrorMessages.SEARCH_EMPTY_QUERY)
     
     # 使用 CASE WHEN 來實現相關性排序
     from sqlalchemy import case, desc
@@ -255,10 +256,10 @@ async def filter_pharmacies_by_masks(
     
     # 參數驗證
     if min_price is not None and max_price is not None and min_price > max_price:
-        raise HTTPException(status_code=422, detail="價格下限不能大於價格上限")
+        raise HTTPException(status_code=422, detail=ErrorMessages.INVALID_PRICE_RANGE)
     
     if min_count is not None and max_count is not None and min_count > max_count:
-        raise HTTPException(status_code=422, detail="數量下限不能大於數量上限")
+        raise HTTPException(status_code=422, detail=ErrorMessages.INVALID_COUNT_RANGE)
     
     # 建立口罩子查詢：計算每家藥局符合價格條件的口罩總庫存數量
     mask_query = db.query(

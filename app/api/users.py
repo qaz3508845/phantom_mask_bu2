@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from app.database.connection import get_db
 from app.models.user import User
 from app.models.transaction import Transaction
-from app.schemas.schemas import UserRankingResponse
+from app.schemas import UserRankingResponse
 from app.core.logging_config import get_logger
 from app.core.messages import ErrorMessages
 

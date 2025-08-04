@@ -10,7 +10,7 @@ from sqlalchemy import func, case, desc
 from typing import List, Optional, Literal, cast
 from datetime import datetime
 from app.database.connection import get_db, supports_for_update
-from app.schemas.schemas import (
+from app.schemas import (
     MaskResponse, 
     StockUpdateRequest, 
     StockUpdateResponse,
@@ -18,6 +18,7 @@ from app.schemas.schemas import (
     BatchMaskResponse
 )
 from app.models import Mask, Pharmacy
+from app.core.messages import ErrorMessages, pharmacy_not_found, mask_not_found, insufficient_stock, mask_batch_duplicate_names, mask_existing_names_in_pharmacy
 
 router = APIRouter()
 
@@ -46,7 +47,7 @@ async def list_masks_by_pharmacy(
     # 驗證藥局是否存在
     pharmacy = db.query(Pharmacy).filter(Pharmacy.id == pharmacy_id).first()
     if not pharmacy:
-        raise HTTPException(status_code=404, detail=f"藥局 ID {pharmacy_id} 不存在")
+        raise HTTPException(status_code=404, detail=pharmacy_not_found(pharmacy_id))
     
     # 查詢該藥局的所有口罩
     query = db.query(Mask).filter(Mask.pharmacy_id == pharmacy_id)
@@ -81,14 +82,14 @@ async def search_masks(
     需求8: Search for pharmacies or masks by name and rank the results by relevance to the search term
     
     使用範例：
-    - ?q=N95                         # 搜尋名稱包含「N95」的口罩
-    - ?q=醫療                         # 搜尋名稱包含「醫療」的口罩
-    - ?q=防護                         # 搜尋名稱包含「防護」的口罩
+    - ?q=True                        # 搜尋名稱包含「True」的口罩
+    - ?q=Barrier                     # 搜尋名稱包含「Barrier」的口罩
+    - ?q=green                       # 搜尋名稱包含「green」的口罩
     """
     # 按相關性排序：完全匹配 > 開頭匹配 > 包含匹配
     search_term = q.strip()
     if not search_term:
-        raise HTTPException(status_code=422, detail="搜尋關鍵字不能為空")
+        raise HTTPException(status_code=422, detail=ErrorMessages.SEARCH_EMPTY_QUERY)
     
     # 使用 CASE WHEN 來實現相關性排序
     relevance = case(
@@ -138,7 +139,7 @@ async def update_stock(
     if not mask:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"口罩 ID {mask_id} 不存在"
+            detail=mask_not_found(mask_id)
         )
     
     # 記錄原庫存 (此時已鎖定，資料一致)
@@ -149,7 +150,7 @@ async def update_stock(
     if new_quantity < 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"庫存不足，現有庫存: {old_quantity}，試圖減少: {abs(stock_update.quantity_change)}"
+            detail=insufficient_stock(old_quantity, abs(stock_update.quantity_change))
         )
     
     try:
@@ -219,7 +220,7 @@ async def batch_manage_masks(
         duplicates = {x for x in names_to_create_list if x in seen or seen.add(x)}
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"請求中包含重複的口罩名稱: {', '.join(duplicates)}"
+            detail=mask_batch_duplicate_names(', '.join(duplicates))
         )
     
     names_to_create_set = set(names_to_create_list)
@@ -235,7 +236,7 @@ async def batch_manage_masks(
             duplicate_names = {name for name, in existing_masks}
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=f"藥局 '{pharmacy.name}' 中已存在以下口罩名稱: {', '.join(duplicate_names)}"
+                detail=mask_existing_names_in_pharmacy(pharmacy.name, ', '.join(duplicate_names))
             )
             
 

@@ -12,7 +12,7 @@ from fastapi import HTTPException
 
 from app.models import Transaction, User, Pharmacy, Mask
 from app.database.connection import supports_for_update
-from app.schemas.schemas import (
+from app.schemas import (
     TransactionCreate, 
     TransactionResponse,
     MultiPharmacyTransactionCreate,

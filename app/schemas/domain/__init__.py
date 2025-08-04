@@ -1,15 +1,16 @@
 """
-Schema 模型匯出 - 向後兼容性
+Domain Schema 模型匯出
 """
 
-from .base import BaseResponse
-from .domain import (
-    # 藥局相關
+# 藥局相關
+from .pharmacy import (
     PharmacyBase,
     PharmacyResponse,
-    PharmacyWithMaskCountResponse,
-    
-    # 口罩相關
+    PharmacyWithMaskCountResponse
+)
+
+# 口罩相關
+from .mask import (
     MaskBase,
     MaskCreate,
     MaskUpdate,
@@ -18,32 +19,36 @@ from .domain import (
     StockUpdateResponse,
     BatchMaskItem,
     BatchMaskRequest,
-    BatchMaskResponse,
-    
-    # 用戶相關
+    BatchMaskResponse
+)
+
+# 用戶相關
+from .user import (
     UserBase,
     UserCreate,
     UserUpdate,
     UserResponse,
-    UserRankingResponse,
-    
-    # 交易相關
+    UserRankingResponse
+)
+
+# 交易相關
+from .transaction import (
     TransactionBase,
     TransactionCreate,
     TransactionResponse,
     TransactionDetailResponse,
     MultiPharmacyTransactionItem,
     MultiPharmacyTransactionCreate,
-    MultiPharmacyTransactionResponse,
-    
-    # 搜尋相關
+    MultiPharmacyTransactionResponse
+)
+
+# 搜尋相關
+from .search import (
     SearchResultItem,
     UnifiedSearchResponse
 )
 
-# 維持向後兼容性 - 所有現有的匯入都能正常工作
 __all__ = [
-    "BaseResponse",
     # 藥局相關
     "PharmacyBase",
     "PharmacyResponse", 

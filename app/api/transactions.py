@@ -9,7 +9,7 @@ from typing import List, Optional
 
 from app.database.connection import get_db
 from app.services.transaction_service import TransactionService
-from app.schemas.schemas import (
+from app.schemas import (
     TransactionCreate,
     TransactionResponse, 
     MultiPharmacyTransactionCreate,
