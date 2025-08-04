@@ -94,11 +94,16 @@ curl http://localhost:8000/health
 # 進入容器執行測試
 docker exec phantom_mask_api pytest
 
-# 或者執行完整測試與覆蓋率報告
+# 執行完整測試與覆蓋率報告
 docker exec phantom_mask_api pytest --cov=app --cov-report=html --cov-report=term-missing
 
-# 查看測試覆蓋率（HTML 報告會在 htmlcov/ 目錄中）
-ls htmlcov/
+# 複製覆蓋率報告到本地
+docker cp phantom_mask_api:/app/htmlcov ./htmlcov
+
+# 查看測試覆蓋率報告
+# Windows: start htmlcov/index.html
+# macOS: open htmlcov/index.html
+# Linux: xdg-open htmlcov/index.html
 ```
 
 
@@ -193,6 +198,9 @@ docker exec phantom_mask_api pytest
 
 # 執行測試並產生覆蓋率報告
 docker exec phantom_mask_api pytest --cov=app --cov-report=html --cov-report=term-missing
+
+# 複製覆蓋率報告到本地
+docker cp phantom_mask_api:/app/htmlcov ./htmlcov
 ```
 
 #### 本地環境
@@ -211,9 +219,9 @@ start htmlcov/index.html # Windows
 ### 測試結果
 
 - **測試數量**: 77 個測試
-- **覆蓋率**: 87% (733 行程式碼中的 638 行)
+- **覆蓋率**: 83% (783 行程式碼中的 653 行)
 - **測試狀態**: 全部通過
-- **執行時間**: ~11 秒
+- **執行時間**: ~8 秒
 
 ### 詳細覆蓋率分析
 
@@ -248,7 +256,7 @@ start htmlcov/index.html # Windows
 |----------|------|------|
 | **功能需求** | 8/8 完成 | 所有需求已實作並測試 |
 | **5xx 錯誤** | 無 | 測試中未發現 5xx 錯誤 |
-| **測試覆蓋** | 87% | 程式碼測試覆蓋率（77個測試） |
+| **測試覆蓋** | 83% | 程式碼測試覆蓋率（77個測試） |
 | **部署能力** | Docker 支援 | 提供容器化部署 |
 | **API 文件** | OpenAPI 3.0 | 互動式文檔 |
 | **錯誤處理** | HTTP 標準 | 使用標準 HTTP 狀態碼 |
@@ -297,6 +305,73 @@ start htmlcov/index.html # Windows
 - 多對多: Users ↔ Pharmacies (透過 Transactions)
 - 交易記錄保存完整的快照資料，支援歷史查詢
 
+## 故障排除
+
+### 常見問題
+
+#### 1. 容器啟動失敗
+```bash
+# 檢查容器狀態
+docker-compose ps
+
+# 查看錯誤日誌
+docker-compose logs
+
+# 重新構建
+docker-compose down && docker-compose up --build -d
+```
+
+#### 2. 資料庫連線問題
+```bash
+# 檢查 PostgreSQL 狀態
+docker logs phantom_mask_postgres
+
+# 檢查資料庫連通性
+docker exec phantom_mask_postgres pg_isready -U postgres -d phantom_mask
+
+# 檢查資料庫表
+docker exec phantom_mask_postgres psql -U postgres -d phantom_mask -c "\dt"
+```
+
+#### 3. API 服務無回應
+```bash
+# 檢查 API 容器日誌
+docker logs phantom_mask_api
+
+# 重啟 API 服務
+docker-compose restart api
+
+# 檢查端口占用
+netstat -an | findstr :8000  # Windows
+lsof -i :8000                # macOS/Linux
+```
+
+#### 4. 測試資料載入失敗
+```bash
+# 檢查 ETL 執行狀況
+docker exec phantom_mask_api python run_etl.py --debug
+
+# 檢查資料是否載入
+docker exec phantom_mask_api python -c "
+from app.database.connection import SessionLocal
+from app.models import Pharmacy
+db = SessionLocal()
+print(f'藥局數量: {db.query(Pharmacy).count()}')
+db.close()
+"
+```
+
+### 清理與重置
+```bash
+# 完全清理（刪除所有資料）
+docker-compose down -v
+rm -rf db_data/
+docker-compose up -d
+
+# 只重啟服務（保留資料）
+docker-compose restart
+```
+
 ## 資料持久化
 
 ### 資料庫檔案位置
@@ -318,4 +393,4 @@ tar -czf db_backup.tar.gz db_data/
 
 ## 專案總結
 
-系統實作 8 個功能需求，使用 FastAPI + PostgreSQL 架構。測試覆蓋率 87%，共 77 個測試案例。
+系統實作 8 個功能需求，使用 FastAPI + PostgreSQL 架構。測試覆蓋率 83%，共 77 個測試案例。
