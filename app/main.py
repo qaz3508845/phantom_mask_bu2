@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database.connection import engine, Base
 from app.models import Pharmacy, Mask, User, Transaction
-from app.api import pharmacies, masks, users
+from app.api import pharmacies, masks, users, transactions
 
 # 建立資料庫表
 Base.metadata.create_all(bind=engine)
@@ -35,6 +35,7 @@ app.add_middleware(
 app.include_router(pharmacies.router, prefix="/api/v1", tags=["藥局"])
 app.include_router(masks.router, prefix="/api/v1", tags=["口罩"])
 app.include_router(users.router, prefix="/api/v1", tags=["用戶管理"])
+app.include_router(transactions.router, prefix="/api/v1", tags=["交易管理"])
 
 @app.get("/")
 async def root():

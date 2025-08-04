@@ -3,7 +3,7 @@
 直接對應 users.json 中的 purchaseHistory 記錄
 """
 
-from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, DECIMAL
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database.connection import Base
@@ -26,8 +26,8 @@ class Transaction(Base):
     
     # 交易資料 (對應 JSON 欄位)
     quantity = Column(Integer, nullable=False)  # transactionQuantity
-    unit_price = Column(Float, nullable=False)  # transactionAmount
-    total_amount = Column(Float, nullable=False)  # unit_price * quantity
+    unit_price = Column(DECIMAL(10, 2), nullable=False)  # transactionAmount
+    total_amount = Column(DECIMAL(10, 2), nullable=False)  # unit_price * quantity
     
     # 時間欄位
     transaction_datetime = Column(DateTime(timezone=True), nullable=False, index=True)  # transactionDatetime

@@ -2,7 +2,7 @@
 藥局資料表模型
 """
 
-from sqlalchemy import Column, Integer, String, Float, DateTime, Text
+from sqlalchemy import Column, Integer, String, DateTime, Text, DECIMAL
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database.connection import Base
@@ -13,7 +13,7 @@ class Pharmacy(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False, index=True)
-    cash_balance = Column(Float, default=0.0)
+    cash_balance = Column(DECIMAL(10, 2), default=0.00)
     
     # 營業時間 (JSON 格式存儲)
     opening_hours = Column(Text)  # 存儲 JSON 字串

@@ -5,6 +5,7 @@ Pydantic 模型定義
 
 import json
 from datetime import datetime, date
+from decimal import Decimal
 from typing import Optional, List, Dict, Any, Union
 from pydantic import BaseModel, Field, field_validator
 
@@ -18,7 +19,7 @@ class BaseResponse(BaseModel):
 class PharmacyBase(BaseModel):
     """藥局基礎模型"""
     name: str = Field(..., description="藥局名稱")
-    cash_balance: float = Field(..., description="現金餘額")
+    cash_balance: Decimal = Field(..., description="現金餘額")
     opening_hours: Optional[Dict[str, Any]] = Field(None, description="營業時間")
 
 
@@ -44,7 +45,7 @@ class PharmacyResponse(PharmacyBase, BaseResponse):
 class MaskBase(BaseModel):
     """口罩基礎模型"""
     name: str = Field(..., description="口罩名稱")
-    price: float = Field(..., gt=0, description="價格")
+    price: Decimal = Field(..., gt=0, description="價格")
     stock_quantity: int = Field(..., ge=0, description="庫存數量")
 
 class MaskCreate(MaskBase):
@@ -54,7 +55,7 @@ class MaskCreate(MaskBase):
 class MaskUpdate(BaseModel):
     """更新口罩請求模型"""
     name: Optional[str] = Field(None, description="口罩名稱")
-    price: Optional[float] = Field(None, gt=0, description="價格")
+    price: Optional[Decimal] = Field(None, gt=0, description="價格")
     stock_quantity: Optional[int] = Field(None, ge=0, description="庫存數量")
 
 class MaskResponse(MaskBase, BaseResponse):
@@ -81,7 +82,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     """更新用戶請求模型"""
     name: Optional[str] = Field(None, description="用戶名稱")
-    cash_balance: Optional[float] = Field(None, ge=0, description="現金餘額")
+    cash_balance: Optional[Decimal] = Field(None, ge=0, description="現金餘額")
 
 class UserResponse(UserBase, BaseResponse):
     """用戶回應模型"""
@@ -106,16 +107,51 @@ class TransactionResponse(TransactionBase, BaseResponse):
     user_id: int = Field(..., description="用戶ID")
     pharmacy_id: int = Field(..., description="藥局ID")
     mask_id: int = Field(..., description="口罩ID")
-    unit_price: float = Field(..., description="單價")
-    total_amount: float = Field(..., description="總金額")
+    unit_price: Decimal = Field(..., description="單價")
+    total_amount: Decimal = Field(..., description="總金額")
+    transaction_datetime: datetime = Field(..., description="交易時間")
+    created_at: datetime = Field(..., description="建立時間")
+    updated_at: datetime = Field(..., description="更新時間")
+
+class TransactionDetailResponse(TransactionBase, BaseResponse):
+    """交易詳細回應模型（完整版）"""
+    id: int = Field(..., description="交易ID")
+    user_id: int = Field(..., description="用戶ID")
+    pharmacy_id: int = Field(..., description="藥局ID")
+    mask_id: int = Field(..., description="口罩ID")
+    unit_price: Decimal = Field(..., description="單價")
+    total_amount: Decimal = Field(..., description="總金額")
     transaction_datetime: datetime = Field(..., description="交易時間")
     created_at: datetime = Field(..., description="建立時間")
     updated_at: datetime = Field(..., description="更新時間")
     
-    # 可選的關聯資料
+    # 完整的關聯資料
     user: Optional[UserResponse] = None
     pharmacy: Optional[PharmacyResponse] = None
     mask: Optional[MaskResponse] = None
+    
+
+# 多藥局交易相關模型 (需求5)
+class MultiPharmacyTransactionItem(BaseModel):
+    """多藥局交易項目"""
+    pharmacy_id: int = Field(..., description="藥局ID")
+    mask_id: int = Field(..., description="口罩ID")
+    quantity: int = Field(..., gt=0, description="購買數量")
+
+class MultiPharmacyTransactionCreate(BaseModel):
+    """多藥局交易請求模型"""
+    user_id: int = Field(..., description="用戶ID")
+    items: List[MultiPharmacyTransactionItem] = Field(..., min_length=1, description="交易項目列表")
+
+class MultiPharmacyTransactionResponse(BaseResponse):
+    """多藥局交易回應模型"""
+    user_id: int = Field(..., description="用戶ID")
+    total_amount: Decimal = Field(..., description="總交易金額")
+    total_items: int = Field(..., description="總項目數")
+    transactions: List[TransactionResponse] = Field(..., description="交易記錄列表")
+    success_count: int = Field(..., description="成功交易數")
+    failed_items: List[str] = Field(default=[], description="失敗項目列表")
+    
 
 # 用戶統計相關模型
 class UserRankingResponse(BaseResponse):
@@ -123,19 +159,12 @@ class UserRankingResponse(BaseResponse):
     rank: int = Field(..., description="排名")
     user_id: int = Field(..., description="用戶ID")
     user_name: str = Field(..., description="用戶名稱")
-    cash_balance: float = Field(..., description="現金餘額")
-    total_spending: float = Field(..., description="總消費金額")
+    cash_balance: Decimal = Field(..., description="現金餘額")
+    total_spending: Decimal = Field(..., description="總消費金額")
     total_quantity: int = Field(..., description="總購買數量")
     total_transactions: int = Field(..., description="總交易次數")
     ranking_type: str = Field(..., description="排行榜類型")
     start_date: Optional[date] = Field(None, description="統計開始日期")
     end_date: Optional[date] = Field(None, description="統計結束日期")
     
-    @field_validator('cash_balance', 'total_spending', mode='before')
-    @classmethod
-    def round_money_fields(cls, v):
-        """將金額欄位四捨五入到小數點後2位"""
-        if v is not None:
-            return round(float(v), 2)
-        return v
 

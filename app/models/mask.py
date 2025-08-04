@@ -2,7 +2,7 @@
 口罩產品資料表模型
 """
 
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, DECIMAL
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database.connection import Base
@@ -13,7 +13,7 @@ class Mask(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False, index=True)
-    price = Column(Float, nullable=False)
+    price = Column(DECIMAL(10, 2), nullable=False)
     stock_quantity = Column(Integer, default=0)
     
     # 外鍵
