@@ -6,6 +6,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import func, case, desc
 from typing import List, Optional, Literal
 from datetime import datetime
 from app.database.connection import get_db
@@ -64,6 +65,52 @@ async def list_masks_by_pharmacy(
     
     # 分頁
     masks = query.offset(skip).limit(limit).all()
+    
+    return masks
+
+@router.get("/search", response_model=List[MaskResponse])
+async def search_masks(
+    q: str = Query(..., description="搜尋關鍵字"),
+    skip: int = Query(0, ge=0, description="跳過筆數"),
+    limit: int = Query(100, ge=1, le=1000, description="取得筆數"),
+    db: Session = Depends(get_db)
+):
+    """
+    按口罩名稱搜尋並按相關性排序
+    
+    需求8: Search for pharmacies or masks by name and rank the results by relevance to the search term
+    
+    使用範例：
+    - ?q=N95                         # 搜尋名稱包含「N95」的口罩
+    - ?q=醫療                         # 搜尋名稱包含「醫療」的口罩
+    - ?q=防護                         # 搜尋名稱包含「防護」的口罩
+    """
+    # 按相關性排序：完全匹配 > 開頭匹配 > 包含匹配
+    search_term = q.strip()
+    if not search_term:
+        raise HTTPException(status_code=422, detail="搜尋關鍵字不能為空")
+    
+    # 使用 CASE WHEN 來實現相關性排序
+    relevance = case(
+        # 完全匹配（最高優先級）
+        (func.lower(Mask.name) == func.lower(search_term), 3),
+        # 開頭匹配
+        (func.lower(Mask.name).startswith(func.lower(search_term)), 2),
+        # 包含匹配
+        (func.lower(Mask.name).contains(func.lower(search_term)), 1),
+        else_=0
+    ).label('relevance')
+    
+    query = (
+        db.query(Mask, relevance)
+        .filter(Mask.name.ilike(f"%{search_term}%"))
+        .order_by(desc('relevance'), Mask.name.asc(), Mask.price.asc())
+        .offset(skip)
+        .limit(limit)
+    )
+    
+    results = query.all()
+    masks = [mask for mask, relevance in results]
     
     return masks
 

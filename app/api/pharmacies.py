@@ -6,7 +6,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 import re
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, case, desc
 from decimal import Decimal
 
 from typing import List, Optional, Union
@@ -177,6 +177,55 @@ async def list_pharmacies(
                     filtered_pharmacies.append(pharmacy)
         
         pharmacies = filtered_pharmacies
+    
+    return pharmacies
+
+@router.get("/search", response_model=List[PharmacyResponse])
+async def search_pharmacies(
+    q: str = Query(..., description="搜尋關鍵字"),
+    skip: int = Query(0, ge=0, description="跳過筆數"),
+    limit: int = Query(100, ge=1, le=1000, description="取得筆數"),
+    db: Session = Depends(get_db)
+):
+    """
+    按藥局名稱搜尋並按相關性排序
+    
+    需求8: Search for pharmacies or masks by name and rank the results by relevance to the search term
+    
+    使用範例：
+    - ?q=大樹                      # 搜尋名稱包含「大樹」的藥局
+    - ?q=健康                      # 搜尋名稱包含「健康」的藥局
+    - ?q=中心                      # 搜尋名稱包含「中心」的藥局
+    """
+    # 使用 PostgreSQL 的全文搜尋功能或簡單的 ILIKE 模糊匹配
+    # 按相關性排序：完全匹配 > 開頭匹配 > 包含匹配
+    search_term = q.strip()
+    if not search_term:
+        raise HTTPException(status_code=422, detail="搜尋關鍵字不能為空")
+    
+    # 使用 CASE WHEN 來實現相關性排序
+    from sqlalchemy import case, desc
+    
+    relevance = case(
+        # 完全匹配（最高優先級）
+        (func.lower(Pharmacy.name) == func.lower(search_term), 3),
+        # 開頭匹配
+        (func.lower(Pharmacy.name).startswith(func.lower(search_term)), 2),
+        # 包含匹配
+        (func.lower(Pharmacy.name).contains(func.lower(search_term)), 1),
+        else_=0
+    ).label('relevance')
+    
+    query = (
+        db.query(Pharmacy, relevance)
+        .filter(Pharmacy.name.ilike(f"%{search_term}%"))
+        .order_by(desc('relevance'), Pharmacy.name.asc())
+        .offset(skip)
+        .limit(limit)
+    )
+    
+    results = query.all()
+    pharmacies = [pharmacy for pharmacy, relevance in results]
     
     return pharmacies
 
