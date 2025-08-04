@@ -41,7 +41,7 @@ async def create_multi_pharmacy_transaction(
     db: Session = Depends(get_db)
 ):
     """
-    建立多藥局交易 (需求5)
+    建立多藥局交易 (需求5.Process a purchase where a user buys masks from multiple pharmacies at once.)
     
     處理用戶同時從多個藥局購買口罩的交易，
     支援部分成功的交易結果回應。
