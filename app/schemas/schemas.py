@@ -73,7 +73,7 @@ class PharmacyWithMaskCountResponse(PharmacyResponse):
 class UserBase(BaseModel):
     """用戶基礎模型"""
     name: str = Field(..., description="用戶名稱")
-    cash_balance: float = Field(..., ge=0, description="現金餘額")
+    cash_balance: Decimal = Field(..., ge=0, description="現金餘額")
 
 class UserCreate(UserBase):
     """建立用戶請求模型"""

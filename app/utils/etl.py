@@ -6,6 +6,7 @@ Extract, Transform, Load 原始 JSON 資料到 PostgreSQL 資料庫
 import json
 import os
 from datetime import datetime
+from decimal import Decimal
 from typing import Dict, List, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -84,7 +85,7 @@ def load_pharmacies_data(file_path: str, db: Session):
         
         pharmacy = Pharmacy(
             name=pharmacy_data['name'],
-            cash_balance=pharmacy_data.get('cashBalance', 0.0),
+            cash_balance=Decimal(str(pharmacy_data.get('cashBalance', 0))),
             opening_hours=json.dumps(opening_hours_json, ensure_ascii=False)
         )
         
@@ -98,7 +99,7 @@ def load_pharmacies_data(file_path: str, db: Session):
         for mask_data in pharmacy_data.get('masks', []):
             mask = Mask(
                 name=mask_data['name'],
-                price=mask_data['price'],
+                price=Decimal(str(mask_data['price'])),
                 stock_quantity=mask_data['stockQuantity'],
                 pharmacy_id=pharmacy.id
             )
@@ -130,7 +131,7 @@ def load_users_data(file_path: str, db: Session, pharmacy_name_to_id: Dict[str, 
         # 建立用戶記錄
         user = User(
             name=user_data['name'],
-            cash_balance=user_data.get('cashBalance', 0.0)
+            cash_balance=Decimal(str(user_data.get('cashBalance', 0)))
         )
         
         db.add(user)
@@ -166,7 +167,7 @@ def load_users_data(file_path: str, db: Session, pharmacy_name_to_id: Dict[str, 
                 continue
             
             # 計算金額
-            unit_price = purchase_history['transactionAmount']
+            unit_price = Decimal(str(purchase_history['transactionAmount']))
             quantity = purchase_history['transactionQuantity']
             total_amount = unit_price * quantity
             

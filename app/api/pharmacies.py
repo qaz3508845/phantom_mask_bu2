@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 import re
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+from decimal import Decimal
 
 from typing import List, Optional, Union
 from datetime import time
@@ -181,8 +182,8 @@ async def list_pharmacies(
 
 @router.get("/filter/masks", response_model=List[PharmacyWithMaskCountResponse])
 async def filter_pharmacies_by_masks(
-    min_price: Optional[float] = Query(None, ge=0, description="價格下限（選填）"),
-    max_price: Optional[float] = Query(None, ge=0, description="價格上限（選填）"),
+    min_price: Optional[Decimal] = Query(None, ge=0, description="價格下限（選填）"),
+    max_price: Optional[Decimal] = Query(None, ge=0, description="價格上限（選填）"),
     min_count: Optional[int] = Query(None, ge=0, description="口罩數量下限（選填）"),
     max_count: Optional[int] = Query(None, ge=0, description="口罩數量上限（選填）"),
     skip: int = Query(0, ge=0, description="跳過筆數"),

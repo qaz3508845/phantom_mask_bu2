@@ -67,7 +67,7 @@ async def get_top_spending_users(
                 "user_id": result.id,
                 "user_name": result.name,
                 "cash_balance": result.cash_balance,
-                "total_spending": float(result.total_spending or 0),
+                "total_spending": result.total_spending or 0,
                 "total_quantity": result.total_quantity or 0,
                 "total_transactions": result.total_transactions or 0,
                 "ranking_type": "spending",

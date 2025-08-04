@@ -25,7 +25,7 @@ class TransactionService:
     def __init__(self, db: Session):
         self.db = db
     
-    def validate_transaction_item(self, user_id: int, pharmacy_id: int, mask_id: int, quantity: int) -> Tuple[User, Pharmacy, Mask, float]:
+    def validate_transaction_item(self, user_id: int, pharmacy_id: int, mask_id: int, quantity: int) -> Tuple[User, Pharmacy, Mask, Decimal]:
         """
         驗證交易項目的有效性
         返回: (user, pharmacy, mask, total_amount)
@@ -111,7 +111,7 @@ class TransactionService:
     def create_multi_pharmacy_transaction(self, transaction_data: MultiPharmacyTransactionCreate) -> MultiPharmacyTransactionResponse:
         """建立多藥局交易"""
         transactions = []
-        total_amount = 0.0
+        total_amount = Decimal('0.00')
         
         try:
             # 第一階段：驗證所有項目，如果任何項目無效則整筆取消
@@ -173,7 +173,7 @@ class TransactionService:
             
             return MultiPharmacyTransactionResponse(
                 user_id=transaction_data.user_id,
-                total_amount=Decimal(str(total_amount)),
+                total_amount=total_amount,
                 total_items=len(transaction_data.items),
                 transactions=[TransactionResponse.model_validate(t) for t in transactions],
                 success_count=len(transactions),
