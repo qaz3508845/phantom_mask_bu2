@@ -36,6 +36,13 @@ async def get_top_spending_users(
     - ?top_n=10&start_date=2024-01-01             # 2024年1月1日起前10名
     - ?top_n=3&start_date=2024-01-01&end_date=2024-12-31  # 2024年前3名
     """
+    # 驗證日期範圍
+    if start_date and end_date and start_date > end_date:
+        raise HTTPException(
+            status_code=422,
+            detail="開始日期不能晚於結束日期"
+        )
+        
     try:
         # 建立基本查詢
         query = db.query(

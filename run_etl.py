@@ -20,19 +20,26 @@ if __name__ == "__main__":
     logger.info("=== Phantom Mask ETL 資料載入工具 ===")
     logger.info("此工具將載入 pharmacies.json 和 users.json 資料到資料庫")
     
-    # 詢問是否清空現有資料
-    response = input("是否要清空現有資料？(y/N): ").strip().lower()
-    clear_data = response in ['y', 'yes', '是']
+    # 檢查是否有自動模式參數
+    auto_mode = len(sys.argv) > 1 and sys.argv[1] == '--auto'
     
-    if clear_data:
-        logger.warning("將清空所有現有資料並重新載入")
+    if auto_mode:
+        logger.info("自動模式：將清空現有資料並重新載入")
+        clear_data = True
     else:
-        logger.info("將在現有資料基礎上載入新資料")
-    
-    confirm = input("確定要繼續嗎？(y/N): ").strip().lower()
-    if confirm not in ['y', 'yes', '是']:
-        logger.info("操作已取消")
-        sys.exit(0)
+        # 詢問是否清空現有資料
+        response = input("是否要清空現有資料？(y/N): ").strip().lower()
+        clear_data = response in ['y', 'yes', '是']
+        
+        if clear_data:
+            logger.warning("將清空所有現有資料並重新載入")
+        else:
+            logger.info("將在現有資料基礎上載入新資料")
+        
+        confirm = input("確定要繼續嗎？(y/N): ").strip().lower()
+        if confirm not in ['y', 'yes', '是']:
+            logger.info("操作已取消")
+            sys.exit(0)
     
     try:
         run_etl(clear_existing_data=clear_data)

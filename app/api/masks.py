@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func, case, desc
-from typing import List, Optional, Literal
+from typing import List, Optional, Literal, cast
 from datetime import datetime
 from app.database.connection import get_db
 from app.schemas.schemas import (
@@ -130,26 +130,26 @@ async def update_stock(
     - quantity_change: 10   # 增加 10 個庫存
     - quantity_change: -5   # 減少 5 個庫存
     """
+    # 查找口罩
+    mask = cast(Mask, db.query(Mask).filter(Mask.id == mask_id).first())
+    if not mask:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"口罩 ID {mask_id} 不存在"
+        )
+    
+    # 記錄原庫存
+    old_quantity = cast(int, mask.stock_quantity)
+    new_quantity = old_quantity + stock_update.quantity_change
+    
+    # 檢查庫存不能為負數
+    if new_quantity < 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"庫存不足，現有庫存: {old_quantity}，試圖減少: {abs(stock_update.quantity_change)}"
+        )
+    
     try:
-        # 查找口罩
-        mask = db.query(Mask).filter(Mask.id == mask_id).first()
-        if not mask:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"口罩 ID {mask_id} 不存在"
-            )
-        
-        # 記錄原庫存
-        old_quantity = getattr(mask, 'stock_quantity')
-        new_quantity = old_quantity + stock_update.quantity_change
-        
-        # 檢查庫存不能為負數
-        if new_quantity < 0:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"庫存不足，現有庫存: {old_quantity}，試圖減少: {abs(stock_update.quantity_change)}"
-            )
-        
         # 更新庫存
         setattr(mask, 'stock_quantity', new_quantity)
         setattr(mask, 'updated_at', datetime.now())
@@ -158,12 +158,12 @@ async def update_stock(
         db.refresh(mask)
         
         return StockUpdateResponse(
-            mask_id=getattr(mask, 'id'),
-            mask_name=getattr(mask, 'name'),
+            mask_id=cast(int, mask.id),
+            mask_name=cast(str, mask.name),
             old_quantity=old_quantity,
             quantity_change=stock_update.quantity_change,
             new_quantity=new_quantity,
-            updated_at=getattr(mask, 'updated_at'),
+            updated_at=cast(datetime, mask.updated_at),
             reason=stock_update.reason
         )
         
@@ -185,15 +185,45 @@ async def batch_manage_masks(
     支援同時建立新的口罩產品或更新現有的產品。
     如果提供 mask_id 則更新現有產品，否則建立新產品。
     """
-    try:
-        # 驗證藥局是否存在
-        pharmacy = db.query(Pharmacy).filter(Pharmacy.id == batch_request.pharmacy_id).first()
-        if not pharmacy:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"藥局 ID {batch_request.pharmacy_id} 不存在"
-            )
+    # 驗證藥局是否存在
+    pharmacy = db.query(Pharmacy).filter(Pharmacy.id == batch_request.pharmacy_id).first()
+    if not pharmacy:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"藥局 ID {batch_request.pharmacy_id} 不存在"
+        )
+    
+    
+    # 找出所有要建立的新口罩名稱
+    names_to_create_list = [item.name for item in batch_request.masks if not item.mask_id]
+    
+    # 檢查請求內部是否有重複的名稱
+    if len(names_to_create_list) != len(set(names_to_create_list)):
+        seen = set()
+        duplicates = {x for x in names_to_create_list if x in seen or seen.add(x)}
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"請求中包含重複的口罩名稱: {', '.join(duplicates)}"
+        )
+    
+    names_to_create_set = set(names_to_create_list)
+    if names_to_create_set:
+        # 檢查這些名稱是否已存在於該藥局
+        existing_masks = db.query(Mask.name).filter(
+            Mask.pharmacy_id == batch_request.pharmacy_id,
+            Mask.name.in_(names_to_create_set)
+        ).all()
         
+        # 如果有任何一個名稱已存在，就回絕請求
+        if existing_masks:
+            duplicate_names = {name for name, in existing_masks}
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"藥局 '{pharmacy.name}' 中已存在以下口罩名稱: {', '.join(duplicate_names)}"
+            )
+            
+
+    try:
         created_masks = []
         updated_masks = []
         failed_items = []
@@ -220,7 +250,7 @@ async def batch_manage_masks(
                     updated_masks.append(mask)
                     
                 else:
-                    # 建立新口罩
+                    # 建立新口罩 (此時已知名稱不重複)
                     mask = Mask(
                         name=item.name,
                         price=item.price,
