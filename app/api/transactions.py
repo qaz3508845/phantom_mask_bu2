@@ -16,10 +16,11 @@ from app.schemas.schemas import (
     MultiPharmacyTransactionResponse
 )
 from app.models import Transaction
+from app.core.messages import transaction_not_found
 
 router = APIRouter()
 
-@router.post("/transactions", response_model=TransactionResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=TransactionResponse, status_code=status.HTTP_201_CREATED)
 async def create_transaction(
     transaction_data: TransactionCreate,
     db: Session = Depends(get_db)
@@ -35,7 +36,7 @@ async def create_transaction(
     service = TransactionService(db)
     return service.create_single_transaction(transaction_data)
 
-@router.post("/transactions/multi-pharmacy", response_model=MultiPharmacyTransactionResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/multi-pharmacy", response_model=MultiPharmacyTransactionResponse, status_code=status.HTTP_201_CREATED)
 async def create_multi_pharmacy_transaction(
     transaction_data: MultiPharmacyTransactionCreate,
     db: Session = Depends(get_db)
@@ -49,7 +50,7 @@ async def create_multi_pharmacy_transaction(
     service = TransactionService(db)
     return service.create_multi_pharmacy_transaction(transaction_data)
 
-@router.get("/transactions", response_model=List[TransactionResponse])
+@router.get("/", response_model=List[TransactionResponse])
 async def get_transactions(
     user_id: Optional[int] = None,
     pharmacy_id: Optional[int] = None,
@@ -78,7 +79,7 @@ async def get_transactions(
     
     return [TransactionResponse.model_validate(t) for t in transactions]
 
-@router.get("/transactions/{transaction_id}", response_model=TransactionResponse)
+@router.get("/{transaction_id}", response_model=TransactionResponse)
 async def get_transaction(
     transaction_id: int,
     db: Session = Depends(get_db)
@@ -93,7 +94,7 @@ async def get_transaction(
     if not transaction:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
-            detail=f"交易 ID {transaction_id} 不存在"
+            detail=transaction_not_found(transaction_id)
         )
     
     return TransactionResponse.model_validate(transaction)

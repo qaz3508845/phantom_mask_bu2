@@ -14,10 +14,11 @@ from app.models.user import User
 from app.models.transaction import Transaction
 from app.schemas.schemas import UserRankingResponse
 from app.core.logging_config import get_logger
+from app.core.messages import ErrorMessages
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/users", tags=["用戶統計"])
+router = APIRouter(tags=["用戶統計"])
 
 @router.get("/top-spenders", response_model=List[UserRankingResponse])
 async def get_top_spending_users(
@@ -33,14 +34,14 @@ async def get_top_spending_users(
     
     使用範例：
     - ?top_n=5                                    # 前5名消費用戶 (所有時間)
-    - ?top_n=10&start_date=2024-01-01             # 2024年1月1日起前10名
-    - ?top_n=3&start_date=2024-01-01&end_date=2024-12-31  # 2024年前3名
+    - ?top_n=10&start_date=2025-01-01             # 2025年1月1日起前10名
+    - ?top_n=3&start_date=2025-01-01&end_date=2025-12-31  # 2025年前3名
     """
     # 驗證日期範圍
     if start_date and end_date and start_date > end_date:
         raise HTTPException(
             status_code=422,
-            detail="開始日期不能晚於結束日期"
+            detail=ErrorMessages.INVALID_DATE_RANGE
         )
         
     try:
@@ -86,4 +87,4 @@ async def get_top_spending_users(
         return rankings
     except Exception as e:
         logger.error(f"Error generating top spending users: {e}")
-        raise HTTPException(status_code=500, detail="獲取消費排行榜失敗")
+        raise HTTPException(status_code=500, detail=ErrorMessages.DATABASE_ERROR)

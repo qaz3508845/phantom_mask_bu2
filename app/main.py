@@ -35,8 +35,8 @@ app.add_middleware(
 app.include_router(search.router, prefix="/api/v1/search", tags=["統一搜尋"])
 app.include_router(pharmacies.router, prefix="/api/v1/pharmacies", tags=["藥局"])
 app.include_router(masks.router, prefix="/api/v1/masks", tags=["口罩"])
-app.include_router(users.router, prefix="/api/v1", tags=["用戶管理"])
-app.include_router(transactions.router, prefix="/api/v1", tags=["交易管理"])
+app.include_router(users.router, prefix="/api/v1/users", tags=["用戶管理"])
+app.include_router(transactions.router, prefix="/api/v1/transactions", tags=["交易管理"])
 
 @app.get("/")
 async def root():
