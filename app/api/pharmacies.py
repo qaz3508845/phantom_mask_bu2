@@ -111,14 +111,14 @@ async def list_pharmacies(
     需求1: List pharmacies, optionally filtered by specific time and/or day of the week
     
     使用範例：
-    - ?day=wednesday&time=14:30        # 星期三下午2點30分營業的藥局
+    - ?day=wednesday&time=14:30        # 星期三下午2點30分營業的藥局 (Centrico, Welltrack 等)
     - ?day=3&time=14:30                # 同上 (數字格式: 3=星期三)
-    - ?day=saturday&time=22:00         # 星期六晚上10點營業的藥局  
+    - ?day=saturday&time=22:00         # 星期六晚上10點營業的藥局 (Welltrack, Health Mart 等)  
     - ?day=6&time=22:00                # 同上 (數字格式: 6=星期六)
-    - ?day=sunday                      # 星期日有營業的藥局
+    - ?day=sunday                      # 星期日有營業的藥局 (Welltrack, Health Mart, Cool Pharmacy Names)
     - ?day=7                           # 同上 (數字格式: 7=星期日)
-    - ?time=09:00                      # 早上9點有營業的藥局（任何一天）
-    - ?search=DFW                      # 搜尋名稱包含「DFW」的藥局
+    - ?time=09:00                      # 早上9點有營業的藥局（任何一天） (DFW Wellness, Carepoint 等)
+    - ?search=DFW                      # 搜尋名稱包含「DFW」的藥局 (DFW Wellness)
     
     星期格式：英文 (monday-sunday) 或數字 (1-7，1=星期一)
     時間格式：HH:MM (例如: 09:30, 14:00, 23:59)
@@ -194,9 +194,9 @@ async def search_pharmacies(
     需求8: Search for pharmacies or masks by name and rank the results by relevance to the search term
     
     使用範例：
-    - ?q=DFW                       # 搜尋名稱包含「DFW」的藥局
-    - ?q=Health                    # 搜尋名稱包含「Health」的藥局
-    - ?q=Care                      # 搜尋名稱包含「Care」的藥局
+    - ?q=DFW                       # 搜尋名稱包含「DFW」的藥局 (DFW Wellness)
+    - ?q=Health                    # 搜尋名稱包含「Health」的藥局 (Health Mart, Health Warehouse, Health Element, HealthMart, Blink Health)
+    - ?q=Care                      # 搜尋名稱包含「Care」的藥局 (Carepoint, First Care Rx, Foundation Care)
     """
     # 使用 PostgreSQL 的全文搜尋功能或簡單的 ILIKE 模糊匹配
     # 按相關性排序：完全匹配 > 開頭匹配 > 包含匹配
@@ -247,11 +247,11 @@ async def filter_pharmacies_by_masks(
            where the count is above, below, or between given thresholds
     
     使用範例：
-    - ?min_price=10&max_price=50&min_count=100    # 在10-50元範圍內有100個以上口罩庫存的藥局
-    - ?max_price=100&max_count=500                # 在100元以下有500個以下口罩庫存的藥局  
-    - ?min_price=20&max_price=80&min_count=50&max_count=300  # 在20-80元範圍內有50-300個口罩庫存的藥局
-    - ?min_count=100                              # 有100個以上口罩庫存的藥局（不限價格）
-    - ?min_price=10&max_price=50                  # 在10-50元範圍內有口罩庫存的藥局（不限數量）
+    - ?min_price=10&max_price=50&min_count=100    # 在10-50元範圍內有100個以上口罩庫存的藥局 (可找到 First Care Rx 等)
+    - ?max_price=30&max_count=50                  # 在30元以下有50個以下口罩庫存的藥局 (Carepoint: 2個)  
+    - ?min_price=10&max_price=50&min_count=50&max_count=150  # 在10-50元範圍內有50-150個口罩庫存的藥局
+    - ?min_count=100                              # 有100個以上口罩庫存的藥局 (First Care Rx: 107個)
+    - ?min_price=10&max_price=50                  # 在10-50元範圍內有口罩庫存的藥局 (大部分藥局都符合)
     """
     
     # 參數驗證

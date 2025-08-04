@@ -38,10 +38,10 @@ async def list_masks_by_pharmacy(
     需求2: List all masks sold by a given pharmacy with an option to sort by name or price
     
     使用範例：
-    - ?pharmacy_id=1                           # 列出藥局1的所有口罩
-    - ?pharmacy_id=1&sort_by=name&order=asc    # 按名稱升序排列
-    - ?pharmacy_id=1&sort_by=price&order=desc  # 按價格降序排列
-    - ?pharmacy_id=2&sort_by=name              # 按名稱排序 (預設升序)
+    - ?pharmacy_id=1                           # 列出 DFW Wellness 的所有口罩
+    - ?pharmacy_id=1&sort_by=name&order=asc    # 按名稱升序：Masquerade, MaskT, Second Smile, True Barrier
+    - ?pharmacy_id=1&sort_by=price&order=desc  # 按價格降序：MaskT (41.86), Second Smile (31.98), True Barrier (13.7)
+    - ?pharmacy_id=3&sort_by=price             # 列出 First Care Rx 按價格排序
     """
     
     # 驗證藥局是否存在
@@ -82,9 +82,9 @@ async def search_masks(
     需求8: Search for pharmacies or masks by name and rank the results by relevance to the search term
     
     使用範例：
-    - ?q=True                        # 搜尋名稱包含「True」的口罩
-    - ?q=Barrier                     # 搜尋名稱包含「Barrier」的口罩
-    - ?q=green                       # 搜尋名稱包含「green」的口罩
+    - ?q=True Barrier                # 搜尋名稱包含「True Barrier」的口罩（完全匹配優先）
+    - ?q=MaskT                       # 搜尋名稱包含「MaskT」的口罩
+    - ?q=green                       # 搜尋名稱包含「green」的口罩（如 True Barrier (green)）
     """
     # 按相關性排序：完全匹配 > 開頭匹配 > 包含匹配
     search_term = q.strip()

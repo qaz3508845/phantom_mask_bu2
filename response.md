@@ -58,8 +58,15 @@ cd phantom_mask_bu2
 
 #### 步驟 2: 環境配置
 ```bash
-# 系統已有預設環境變數，可直接啟動
-# 如需自訂設定，請參考不使用 Docker 部署章節
+# 複製環境變數範例檔案（必要步驟）
+# Linux/macOS:
+cp .env.example .env
+
+# Windows:
+copy .env.example .env
+
+# 預設配置已可直接使用，如需自訂請編輯 .env 檔案
+# 包含資料庫連線、API 端口等設定
 ```
 
 #### 步驟 3: 啟動完整系統
@@ -120,16 +127,20 @@ docker cp phantom_mask_api:/app/htmlcov ./htmlcov
 # 1. 安裝相依套件
 pip install -r requirements.txt
 
-# 2. 設定環境變數（建立 .env 檔案）
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_DB=phantom_mask
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-API_HOST=0.0.0.0
-API_PORT=8000
-DEBUG=true
-LOG_LEVEL=DEBUG
+# 2. 設定環境變數
+# 複製範例檔案並根據需要修改
+# Linux/macOS: cp .env.example .env
+# Windows: copy .env.example .env
+# 或手動編輯 .env 檔案包含以下設定：
+# POSTGRES_HOST=localhost
+# POSTGRES_PORT=5432
+# POSTGRES_DB=phantom_mask
+# POSTGRES_USER=postgres  
+# POSTGRES_PASSWORD=postgres
+# API_HOST=0.0.0.0
+# API_PORT=8000
+# DEBUG=true
+# LOG_LEVEL=DEBUG
 
 # 3. 啟動伺服器（資料庫表格會自動建立）
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
@@ -212,8 +223,9 @@ pytest
 pytest --cov=app --cov-report=html --cov-report=term-missing
 
 # 查看 HTML 覆蓋率報告
-open htmlcov/index.html  # macOS
-start htmlcov/index.html # Windows
+# macOS: open htmlcov/index.html
+# Windows: start htmlcov/index.html  
+# Linux: xdg-open htmlcov/index.html
 ```
 
 ### 測試結果
@@ -309,6 +321,21 @@ start htmlcov/index.html # Windows
 
 ### 常見問題
 
+#### 0. 環境變數檔案不存在
+```bash
+# 錯誤訊息: "env file .env not found"
+# 解決方法: 複製範例檔案
+
+# Linux/macOS:
+cp .env.example .env
+
+# Windows:
+copy .env.example .env
+
+# 然後重新啟動
+docker-compose up -d
+```
+
 #### 1. 容器啟動失敗
 ```bash
 # 檢查容器狀態
@@ -365,7 +392,13 @@ db.close()
 ```bash
 # 完全清理（刪除所有資料）
 docker-compose down -v
+
+# 刪除資料庫檔案
+# Linux/macOS:
 rm -rf db_data/
+# Windows:
+rmdir /s /q db_data
+
 docker-compose up -d
 
 # 只重啟服務（保留資料）
@@ -388,7 +421,10 @@ docker exec phantom_mask_postgres pg_dump -U postgres phantom_mask > backup.sql
 docker exec -i phantom_mask_postgres psql -U postgres phantom_mask < backup.sql
 
 # 備份整個資料庫目錄
+# Linux/macOS:
 tar -czf db_backup.tar.gz db_data/
+# Windows (PowerShell):
+Compress-Archive -Path db_data -DestinationPath db_backup.zip
 ```
 
 ## 專案總結

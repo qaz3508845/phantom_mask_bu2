@@ -42,10 +42,10 @@ async def unified_search(
     相關性排序：完全匹配 > 開頭匹配 > 包含匹配
     
     使用範例：
-    - ?q=DFW                       # 搜尋名稱包含「DFW」的藥局和口罩
-    - ?q=True                      # 搜尋名稱包含「True」的藥局和口罩
-    - ?q=Health                    # 搜尋名稱包含「Health」的藥局和口罩
-    - ?q=green&skip=10&limit=20    # 分頁搜尋
+    - ?q=DFW                       # 搜尋名稱包含「DFW」的藥局和口罩 (找到 DFW Wellness 藥局)
+    - ?q=True Barrier              # 搜尋名稱包含「True Barrier」的藥局和口罩 (找到多種 True Barrier 口罩)
+    - ?q=Health                    # 搜尋名稱包含「Health」的藥局和口罩 (Health Mart, Health Warehouse, HealthMart 等)
+    - ?q=MaskT&skip=10&limit=20    # 分頁搜尋名稱包含「MaskT」的結果
     """
     search_term = q.strip()
     if not search_term:
